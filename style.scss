@@ -88,5 +88,11 @@ a {
 #perfect {
   position: absolute;
   opacity: 0;
+  font-size: 30px;
   transition: opacity 2s;
+}
+
+#introduction {
+  position: absolute;
+  bottom: 8px;
 }

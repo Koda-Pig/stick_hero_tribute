@@ -61,13 +61,17 @@ class Game {
   }
 
   draw = () => {
+    this.ctx.save()
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
 
-    // Save the current drawing state
-    this.ctx.save()
+    this.drawBackground()
 
-    // Shift view
-    this.ctx.translate(-this.sceneOffset, 0)
+    // Center main canvas area to the middle of the screen
+    // need to fix the pillars not being drawn full height
+    this.ctx.translate(
+      (window.innerWidth - this.canvas.width) / 2 - this.sceneOffset,
+      (window.innerHeight - this.canvas.width) / 2
+    )
 
     // Draw scene
     this.drawPlatforms()
@@ -78,29 +82,187 @@ class Game {
     this.ctx.restore()
   }
 
+  drawBackground = () => {
+    // Draw sky
+    const gradient = this.ctx.createLinearGradient(0, 0, 0, window.innerHeight)
+    gradient.addColorStop(0, "#BBD691")
+    gradient.addColorStop(1, "#FEF1E1")
+    this.ctx.fillStyle = gradient
+    this.ctx.fillRect(0, 0, window.innerWidth, window.innerHeight)
+
+    // Draw hills
+    this.drawHill(
+      this.hill1BaseHeight,
+      this.hill1Amplitude,
+      this.hill1Stretch,
+      "#95C629"
+    )
+    this.drawHill(
+      this.hill2BaseHeight,
+      this.hill2Amplitude,
+      this.hill2Stretch,
+      "#659F1C"
+    )
+
+    // Draw trees
+    this.trees.forEach(tree => this.drawTree(tree.x, tree.color))
+  }
+
+  drawHill = (baseHeight, amplitude, stretch, color) => {
+    this.ctx.beginPath()
+    this.ctx.moveTo(0, window.innerHeight)
+    this.ctx.lineTo(0, this.getHillY(0, baseHeight, amplitude, stretch))
+    for (let i = 0; i < window.innerWidth; i++) {
+      this.ctx.lineTo(i, this.getHillY(i, baseHeight, amplitude, stretch))
+    }
+    this.ctx.lineTo(window.innerWidth, window.innerHeight)
+    this.ctx.fillStyle = color
+    this.ctx.fill()
+  }
+
+  getHillY = (windowX, baseHeight, amplitude, stretch) => {
+    const sineBaseY = window.innerHeight - baseHeight
+    return (
+      this.sinus(
+        (this.sceneOffset * this.backgroundSpeedMultiplier + windowX) * stretch
+      ) *
+        amplitude +
+      sineBaseY
+    )
+  }
+
+  getTreeY = (x, baseHeight, amplitude) => {
+    const sineBaseY = window.innerHeight - baseHeight
+    return this.sinus(x) * amplitude + sineBaseY
+  }
+
+  drawTree = (x, color) => {
+    this.ctx.save()
+    this.ctx.translate(
+      (-this.sceneOffset * this.backgroundSpeedMultiplier + x) *
+        this.hill1Stretch,
+      this.getTreeY(x, this.hill1BaseHeight, this.hill1Amplitude)
+    )
+
+    const treeTrunkHeight = 5
+    const treeTrunkWidth = 2
+    const treeCrownHeight = 25
+    const treeCrownWidth = 10
+
+    // Draw trunk
+    this.ctx.fillStyle = "#7D833C"
+    this.ctx.fillRect(
+      -treeTrunkWidth / 2,
+      -treeTrunkHeight,
+      treeTrunkWidth,
+      treeTrunkHeight
+    )
+
+    // Draw crown
+    this.ctx.beginPath()
+    this.ctx.moveTo(-treeCrownWidth / 2, -treeTrunkHeight)
+    this.ctx.lineTo(0, -(treeTrunkHeight + treeCrownHeight))
+    this.ctx.lineTo(treeCrownWidth / 2, -treeTrunkHeight)
+    this.ctx.fillStyle = color
+    this.ctx.fill()
+
+    this.ctx.restore()
+  }
+
   drawPlatforms = () => {
+    const lastStick = this.sticks[this.sticks.length - 1]
     this.platforms.forEach(({ x, w }) => {
       this.ctx.fillStyle = "black"
       this.ctx.fillRect(
         x,
         this.canvas.height - this.platformHeight,
         w,
-        this.platformHeight
+        this.platformHeight + (window.innerHeight - this.canvas.height / 2)
       )
+
+      // Draw perfect area only if hero did not yet reach the platform
+      if (lastStick.x < x) {
+        this.ctx.fillStyle = "red"
+        this.ctx.fillRect(
+          x + w / 2 - this.perfectAreaSize / 2,
+          this.canvas.height - this.platformHeight,
+          this.perfectAreaSize,
+          this.perfectAreaSize
+        )
+      }
     })
   }
 
-  drawHero = () => {
-    this.heroWidth = 20
-    this.heroHeight = 30
-
-    this.ctx.fillStyle = "red"
-    this.ctx.fillRect(
-      this.heroX,
-      this.heroY + this.canvas.height - this.platformHeight - this.heroHeight,
-      this.heroWidth,
-      this.heroHeight
+  drawRoundedRect = (x, y, width, height, radius) => {
+    this.ctx.beginPath()
+    this.ctx.moveTo(x, y + radius)
+    this.ctx.lineTo(x, y + height - radius)
+    this.ctx.arcTo(x, y + height, x + radius, y + height, radius)
+    this.ctx.lineTo(x + width - radius, y + height)
+    this.ctx.arcTo(
+      x + width,
+      y + height,
+      x + width,
+      y + height - radius,
+      radius
     )
+    this.ctx.lineTo(x + width, y + radius)
+    this.ctx.arcTo(x + width, y, x + width - radius, y, radius)
+    this.ctx.lineTo(x + radius, y)
+    this.ctx.arcTo(x, y, x, y + radius, radius)
+    this.ctx.fill()
+  }
+
+  drawHero = () => {
+    this.ctx.save()
+    this.ctx.fillStyle = "black"
+    this.ctx.translate(
+      this.heroX - this.heroWidth / 2,
+      this.heroY +
+        this.canvas.height -
+        this.platformHeight -
+        this.heroHeight / 2
+    )
+
+    // Body
+    this.drawRoundedRect(
+      -this.heroWidth / 2,
+      -this.heroHeight / 2,
+      this.heroWidth,
+      this.heroHeight - 4,
+      5
+    )
+
+    // Legs
+    const legDistance = 5
+    this.ctx.beginPath()
+    this.ctx.arc(legDistance, 11.5, 3, 0, Math.PI * 2, false)
+    this.ctx.fill()
+    this.ctx.beginPath()
+    this.ctx.arc(-legDistance, 11.5, 3, 0, Math.PI * 2, false)
+    this.ctx.fill()
+
+    // Eye
+    this.ctx.beginPath()
+    this.ctx.fillStyle = "white"
+    this.ctx.arc(5, -7, 3, 0, Math.PI * 2, false)
+    this.ctx.fill()
+
+    // Band
+    this.ctx.fillStyle = "red"
+    this.ctx.fillRect(-this.heroWidth / 2 - 1, -12, this.heroWidth + 2, 4.5)
+    this.ctx.beginPath()
+    this.ctx.moveTo(-9, -14.5)
+    this.ctx.lineTo(-17, -18.5)
+    this.ctx.lineTo(-14, -8.5)
+    this.ctx.fill()
+    this.ctx.beginPath()
+    this.ctx.moveTo(-10, -10.5)
+    this.ctx.lineTo(-15, -3.5)
+    this.ctx.lineTo(-5, -7)
+    this.ctx.fill()
+
+    this.ctx.restore()
   }
 
   drawSticks = () => {
@@ -125,7 +287,6 @@ class Game {
 
   animate = timestamp => {
     if (!this.lastTimestamp) {
-      // First cycle
       this.lastTimestamp = timestamp
       window.requestAnimationFrame(this.animate)
       return
@@ -144,15 +305,23 @@ class Game {
       case "turning": {
         lastStick.rotation += timePassed / this.turningSpeed
 
-        if (lastStick.rotation >= 90) {
+        if (lastStick.rotation > 90) {
           lastStick.rotation = 90
 
-          const nextPlatform = this.thePlatformTheStickHits()
+          const [nextPlatform, perfectHit] = this.thePlatformTheStickHits()
           if (nextPlatform) {
-            this.score++
+            // Increase score
+            this.score += perfectHit ? 2 : 1
             this.scoreElement.innerText = this.score
 
+            if (perfectHit) {
+              this.perfectElement.style.opacity = 1
+              setTimeout(() => (this.perfectElement.style.opacity = 0), 1000)
+            }
+
             this.generatePlatform()
+            this.generateTree()
+            this.generateTree()
           }
 
           this.phase = "walking"
@@ -162,19 +331,18 @@ class Game {
       case "walking": {
         this.heroX += timePassed / this.walkingSpeed
 
-        const nextPlatform = this.thePlatformTheStickHits()
+        const [nextPlatform] = this.thePlatformTheStickHits()
         if (nextPlatform) {
-          // If the hero will reach another platform then limit its position at its edge
-          const maxHeroX = nextPlatform.x + nextPlatform.w - 30
+          // If hero will reach another platform then limit it's position at it's edge
+          const maxHeroX =
+            nextPlatform.x + nextPlatform.w - this.heroDistanceFromEdge
           if (this.heroX > maxHeroX) {
             this.heroX = maxHeroX
             this.phase = "transitioning"
           }
         } else {
-          // If the hero won't reach another platform then limit its position at the end of the pole
-          const maxHeroX =
-            this.sticks[this.sticks.length - 1].x +
-            this.sticks[this.sticks.length - 1].length
+          // If hero won't reach another platform then limit it's position at the end of the pole
+          const maxHeroX = lastStick.x + lastStick.length + this.heroWidth
           if (this.heroX > maxHeroX) {
             this.heroX = maxHeroX
             this.phase = "falling"
@@ -184,8 +352,13 @@ class Game {
       }
       case "transitioning": {
         this.sceneOffset += timePassed / this.transitioningSpeed
-        const nextPlatform = this.thePlatformTheStickHits()
-        if (nextPlatform.x + nextPlatform.w - this.sceneOffset < 100) {
+
+        const [nextPlatform] = this.thePlatformTheStickHits()
+        if (
+          this.sceneOffset >
+          nextPlatform.x + nextPlatform.w - this.paddingX
+        ) {
+          // Add the next step
           this.sticks.push({
             x: nextPlatform.x + nextPlatform.w,
             length: 0,
@@ -196,36 +369,55 @@ class Game {
         break
       }
       case "falling": {
-        this.heroY += timePassed / this.fallingSpeed
-        if (this.sticks[this.sticks.length - 1].rotation < 180) {
-          this.sticks[this.sticks.length - 1].rotation +=
-            timePassed / this.turningSpeed
-        }
+        if (lastStick.rotation < 180)
+          lastStick.rotation += timePassed / this.turningSpeed
 
-        const maxHeroY = this.platformHeight + 100
+        this.heroY += timePassed / this.fallingSpeed
+        const maxHeroY =
+          this.platformHeight +
+          100 +
+          (this.canvas.width - this.canvas.height) / 2
         if (this.heroY > maxHeroY) {
           this.restartButton.style.display = "block"
           return
         }
         break
       }
+      default:
+        throw Error("Wrong this.phase")
     }
 
     this.draw()
-    this.lastTimestamp = timestamp
-
     window.requestAnimationFrame(this.animate)
+
+    this.lastTimestamp = timestamp
   }
 
   thePlatformTheStickHits = () => {
     const lastStick = this.sticks[this.sticks.length - 1]
+
+    if (lastStick.rotation != 90) throw Error(`Stick is ${lastStick.rotation}°`)
     const stickFarX = lastStick.x + lastStick.length
 
     const platformTheStickHits = this.platforms.find(
       platform => platform.x < stickFarX && stickFarX < platform.x + platform.w
     )
 
-    return platformTheStickHits
+    // If the stick hits the perfect area
+    if (
+      platformTheStickHits &&
+      platformTheStickHits.x +
+        platformTheStickHits.w / 2 -
+        this.perfectAreaSize / 2 <
+        stickFarX &&
+      stickFarX <
+        platformTheStickHits.x +
+          platformTheStickHits.w / 2 +
+          this.perfectAreaSize / 2
+    )
+      return [platformTheStickHits, true]
+
+    return [platformTheStickHits, false]
   }
 
   // Generates a new platform
@@ -358,6 +550,7 @@ class Game {
       this.handleRestart(e, "click")
     )
     window.addEventListener("keydown", e => this.handleRestart(e, "keydown"))
+    window.addEventListener("resize", this.handleResize)
   }
 }
 
