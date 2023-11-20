@@ -18,40 +18,10 @@ body {
   height: 100%;
 }
 
-body,
-.container {
+body {
   display: grid;
   place-items: center;
-}
-
-.container {
-  position: relative;
-}
-
-canvas {
-  border: 1px solid;
-}
-
-#score {
-  position: absolute;
-  top: 30px;
-  right: 30px;
-  font-size: 2em;
-  font-weight: 900;
-}
-
-#restart {
-  position: absolute;
-  display: none;
-}
-
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-  &:hover {
-    color: #535bf2;
-  }
+  margin: 0;
 }
 
 button {
@@ -74,6 +44,15 @@ button {
   }
 }
 
+a {
+  font-weight: 500;
+  color: #646cff;
+  text-decoration: inherit;
+  &:hover {
+    color: #535bf2;
+  }
+}
+
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
@@ -85,4 +64,29 @@ button {
   button {
     background-color: #f9f9f9;
   }
+}
+
+.container {
+  position: relative;
+  display: grid;
+  place-items: center;
+}
+
+#score {
+  position: absolute;
+  top: 30px;
+  right: 30px;
+  font-size: 2em;
+  font-weight: 900;
+}
+
+#restart {
+  position: absolute;
+  display: none;
+}
+
+#perfect {
+  position: absolute;
+  opacity: 0;
+  transition: opacity 2s;
 }

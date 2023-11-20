@@ -1,8 +1,16 @@
 class Game {
-  constructor(canvas, scoreElement, restartButton) {
+  constructor(
+    canvas,
+    scoreElement,
+    restartButton,
+    introductionElement,
+    perfectElement
+  ) {
     this.canvas = canvas
     this.scoreElement = scoreElement
     this.restartButton = restartButton
+    this.introductionElement = introductionElement
+    this.perfectElement = perfectElement
 
     // Getting the drawing context
     this.ctx = this.canvas.getContext("2d")
@@ -19,8 +27,6 @@ class Game {
     this.score = 0
 
     // Constants
-    this.canvasWidth = 375
-    this.canvasHeight = 375
     this.platformHeight = 100
     this.heroDistanceFromEdge = 10 // While waiting
     this.paddingX = 100 // Waiting position of hero
@@ -42,7 +48,8 @@ class Game {
   }
 
   init = () => {
-    console.log("init")
+    this.canvas.width = window.innerWidth
+    this.canvas.height = window.innerHeight
   }
 
   last = array => {
@@ -54,7 +61,7 @@ class Game {
   }
 
   draw = () => {
-    this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight)
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
 
     // Save the current drawing state
     this.ctx.save()
@@ -76,7 +83,7 @@ class Game {
       this.ctx.fillStyle = "black"
       this.ctx.fillRect(
         x,
-        this.canvasHeight - this.platformHeight,
+        this.canvas.height - this.platformHeight,
         w,
         this.platformHeight
       )
@@ -90,7 +97,7 @@ class Game {
     this.ctx.fillStyle = "red"
     this.ctx.fillRect(
       this.heroX,
-      this.heroY + this.canvasHeight - this.platformHeight - this.heroHeight,
+      this.heroY + this.canvas.height - this.platformHeight - this.heroHeight,
       this.heroWidth,
       this.heroHeight
     )
@@ -101,7 +108,7 @@ class Game {
       this.ctx.save()
 
       // Move the anchor point to the start of the stick and rotate
-      this.ctx.translate(stick.x, this.canvasHeight - this.platformHeight)
+      this.ctx.translate(stick.x, this.canvas.height - this.platformHeight)
       this.ctx.rotate((Math.PI / 180) * stick.rotation)
 
       // Draw stick
@@ -240,7 +247,27 @@ class Game {
       this.minimumWidth +
       Math.floor(Math.random() * (this.maximumWidth - this.minimumWidth))
 
-    platforms.push({ x, w })
+    this.platforms.push({ x, w })
+  }
+
+  // Generates a new tree
+  generateTree = () => {
+    const minimumGap = 30
+    const maximumGap = 150
+
+    // X coordinate of the right edge of the furthest tree
+    const lastTree = this.trees[this.trees.length - 1]
+    let furthestX = lastTree ? lastTree.x : 0
+
+    const x =
+      furthestX +
+      minimumGap +
+      Math.floor(Math.random() * (maximumGap - minimumGap))
+
+    const treeColors = ["#6D8821", "#8FAC34", "#98B333"]
+    const color = treeColors[Math.floor(Math.random() * 3)]
+
+    this.trees.push({ x, color })
   }
 
   // Resets game state and layout
@@ -248,41 +275,52 @@ class Game {
     // Reset game state
     this.phase = "waiting"
     this.lastTimestamp = undefined
+    this.sceneOffset = 0
+    this.score = 0
+
+    this.introductionElement.style.opacity = 1
+    this.perfectElement.style.opacity = 0
+    this.restartButton.style.display = "none"
+    this.scoreElement.innerText = this.score
 
     // The first platform is always the same
     this.platforms = [{ x: 50, w: 50 }]
-    generatePlatform()
-    generatePlatform()
-    generatePlatform()
-    generatePlatform()
-
-    // Initialize hero position
-    this.heroX = this.platforms[0].x + this.platforms[0].w - 30 // Hero stands a bit before the edge
-    this.heroY = 0
-
-    // By how much should we shift the screen back
-    this.sceneOffset = 0
+    this.generatePlatform()
+    this.generatePlatform()
+    this.generatePlatform()
+    this.generatePlatform()
 
     // There's always a stick, even if it appears to be invisible (length: 0)
     this.sticks = [
       { x: this.platforms[0].x + this.platforms[0].w, length: 0, rotation: 0 },
     ]
 
-    //Score
-    this.score = 0
+    this.trees = []
+    this.generateTree()
+    this.generateTree()
+    this.generateTree()
+    this.generateTree()
+    this.generateTree()
+    this.generateTree()
+    this.generateTree()
+    this.generateTree()
+    this.generateTree()
 
-    // Reset UI
-    this.restartButton.style.display = "none" // Hide reset button
-    this.scoreElement.innerText = this.score // Reset score display
+    // Initialize hero position
+    this.heroX =
+      this.platforms[0].x + this.platforms[0].w - this.heroDistanceFromEdge
+    this.heroY = 0
 
-    draw()
+    this.draw()
   }
 
   // handle mouse down/ touch start
-  handleClick = () => {
+  handleClick = e => {
+    e.preventDefault()
     if (this.phase == "waiting") {
-      this.phase = "stretching"
       this.lastTimestamp = undefined
+      this.introductionElement.style.opacity = 0
+      this.phase = "stretching"
       window.requestAnimationFrame(this.animate)
     }
   }
@@ -294,16 +332,32 @@ class Game {
     }
   }
 
+  handleResize = () => {
+    this.canvas.width = window.innerWidth
+    this.canvas.height = window.innerHeight
+  }
+
   // handle restart button click
-  handleRestart = () => {
-    this.resetGame()
-    this.restartButton.style.display = "none"
+  handleRestart = (e, type) => {
+    if (type === "click") {
+      this.resetGame()
+      this.restartButton.style.display = "none"
+    } else if (type === "keydown" && e.key === " ") {
+      e.preventDefault()
+      this.resetGame()
+      return
+    }
   }
 
   addEventListeners = () => {
-    this.canvas.addEventListener("mousedown", this.handleClick)
+    this.canvas.addEventListener("mousedown", e => this.handleClick(e))
+    this.canvas.addEventListener("touchstart", e => this.handleClick(e))
     this.canvas.addEventListener("mouseup", this.handleRelease)
-    this.restartButton.addEventListener("click", this.handleRestart)
+    this.canvas.addEventListener("touchend", this.handleRelease)
+    this.restartButton.addEventListener("click", e =>
+      this.handleRestart(e, "click")
+    )
+    window.addEventListener("keydown", e => this.handleRestart(e, "keydown"))
   }
 }
 
