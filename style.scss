@@ -75,22 +75,40 @@ a {
 }
 
 .container {
-  position: relative;
   display: grid;
   place-items: center;
 }
 
-#score {
+.score-container {
   position: absolute;
-  top: 30px;
+  top: 10px;
   right: 30px;
-  font-size: 2em;
-  font-weight: 900;
-  text-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  display: grid;
+  gap: 8px;
+  align-items: center;
+  grid-template-columns: auto auto;
+
+  .score {
+    font-size: 2.5rem;
+    font-weight: 900;
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    line-height: 0.8;
+
+    &-description {
+      font-size: 1rem;
+      text-align: right;
+    }
+  }
+
+  #score {
+  }
+
+  #high-score {
+  }
 }
 
 #restart {
-  top: 30%;
+  top: 40%;
   position: absolute;
   transition: opacity 0.15s;
 
@@ -100,8 +118,8 @@ a {
   }
 }
 
-#perfect {
-  top: 30%;
+.alert {
+  top: 20%;
   opacity: 0;
   display: grid;
   font-size: 3rem;
@@ -125,9 +143,22 @@ a {
     opacity: 1;
 
     &::after {
-      animation-name: congratz;
+      animation-name: ripple;
       animation-duration: var(--animation-duration);
     }
+  }
+}
+
+#perfect {
+}
+
+#congrats {
+  max-width: calc(100% - 2rem);
+  text-align: center;
+  // opacity: 1;
+
+  &.hide {
+    // opacity: 0;
   }
 }
 
@@ -155,7 +186,7 @@ a {
   }
 }
 
-@keyframes congratz {
+@keyframes ripple {
   0% {
     width: 0;
     opacity: 0;

@@ -8,7 +8,12 @@
   </head>
   <body>
     <div class="container">
-      <p id="score"></p>
+      <div class="score-container">
+        <p class="score-description">score</p>
+        <p class="score" id="score"></p>
+        <p class="score-description">high score</p>
+        <p class="score" id="high-score"></p>
+      </div>
       <canvas id="game" width="375" height="375"></canvas>
       <div id="introduction">
         <p>
@@ -16,7 +21,8 @@
         </p>
       </div>
       <!-- add a set of positive reactions to perfect scores, rotate randomly -->
-      <p id="perfect">PERFECT!</p>
+      <p class="alert" id="perfect">PERFECT!</p>
+      <p class="alert" id="congrats">NEW HIGH SCORE!</p>
       <button id="restart" type="button" aria-label="restart">RESTART</button>
     </div>
     <script type="module" src="/main.js"></script>

@@ -10,6 +10,6 @@ If you get an error when you try open the project in the browser, do a force ref
 
 TODO:
 
-- [ ] Add a high score system that keeps high score in browser storage
+- [x] Add a high score system that keeps high score in browser storage
 - [ ] Add walking animation to hero
 - [x] Make hero fall more natural - increase velocity

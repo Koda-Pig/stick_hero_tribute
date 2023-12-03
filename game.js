@@ -2,15 +2,19 @@ class Game {
   constructor(
     canvas,
     scoreElement,
+    highscoreElement,
     restartButton,
     introductionElement,
-    perfectElement
+    perfectElement,
+    congratsElement
   ) {
     this.canvas = canvas
     this.scoreElement = scoreElement
+    this.highscoreElement = highscoreElement
     this.restartButton = restartButton
     this.introductionElement = introductionElement
     this.perfectElement = perfectElement
+    this.congratsElement = congratsElement
 
     // Getting the drawing context
     this.ctx = this.canvas.getContext("2d")
@@ -24,6 +28,7 @@ class Game {
     this.platforms = []
     this.sticks = []
     this.score = 0
+    this.highscore = localStorage.getItem("stick-hero-tribute-highscore") || 0 // check if a high score is saved in user browser
 
     // Constants
     this.heroDistanceFromEdge = 10 // While waiting
@@ -381,8 +386,13 @@ class Game {
 
         const maxHeroY =
           this.canvas.height - this.platformHeight + this.heroHeight + 10
+
+        // Hero falls off screen
         if (this.heroY > maxHeroY) {
           this.restartButton.classList.remove("hide")
+          this.gameOver = true
+          console.log(this.highscoreElement)
+          this.handleHighScore()
         }
         break
       }
@@ -391,6 +401,8 @@ class Game {
     }
 
     this.draw()
+    if (this.gameOver) return
+
     window.requestAnimationFrame(this.animate)
 
     this.lastTimestamp = timestamp
@@ -474,10 +486,13 @@ class Game {
     this.sceneOffset = 0
     this.score = 0
     this.fallingSpeed = 0.5
+    this.gameOver = false
 
     this.introductionElement.classList.remove("hide")
     this.restartButton.classList.add("hide")
+    this.congratsElement.classList.remove("highlight")
     this.scoreElement.innerText = this.score
+    this.highscoreElement.innerText = this.highscore
 
     // The first platform is always the same
     this.platforms = [{ x: 50, w: 50 }]
@@ -549,6 +564,16 @@ class Game {
       e.preventDefault()
       this.resetGame()
       return
+    }
+  }
+
+  // handle high score
+  handleHighScore = () => {
+    if (this.score > this.highscore) {
+      localStorage.setItem("stick-hero-tribute-highscore", this.score)
+      this.highscore = this.score
+      this.highscoreElement.innerText = this.highscore
+      this.congratsElement.classList.add("highlight")
     }
   }
 
