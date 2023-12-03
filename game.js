@@ -22,8 +22,7 @@ class Game {
     this.heroY // Only changes when falling
     this.sceneOffset // Moves the whole game
     this.platforms = []
-    // this.sticks = []
-    this.sticks = [{ x: 100, length: 50, rotation: 60 }] // CHANGE THIS BACK TO EMPTY ARRAY
+    this.sticks = []
     this.score = 0
 
     // Constants
@@ -477,10 +476,11 @@ class Game {
 
     // The first platform is always the same
     this.platforms = [{ x: 50, w: 50 }]
-    this.generatePlatform()
-    this.generatePlatform()
-    this.generatePlatform()
-    this.generatePlatform()
+
+    // Keep generating platforms until the screen is full
+    while (this.totalPlatformWidth() < window.innerWidth) {
+      this.generatePlatform()
+    }
 
     // There's always a stick, even if it appears to be invisible (length: 0)
     this.sticks = [
@@ -504,6 +504,16 @@ class Game {
     this.heroY = 0
 
     this.draw()
+  }
+
+  totalPlatformWidth = () => {
+    // Use reduce to find the rightmost edge of the platforms
+    const totalPlatformWidth = this.platforms.reduce((max, platform) => {
+      const rightEdge = platform.x + platform.w
+      return rightEdge > max ? rightEdge : max
+    }, 0)
+
+    return totalPlatformWidth
   }
 
   // handle mouse down/ touch start

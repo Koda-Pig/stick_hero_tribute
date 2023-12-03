@@ -5,3 +5,5 @@ https://www.freecodecamp.org/news/javascript-game-tutorial-stick-hero-with-html-
 - `npm install`
 - `npm run dev`
 - `npm run build`
+
+If you get an error when you try open the project in the browser, do a force refresh of the page then change the url from https:// to http://.
