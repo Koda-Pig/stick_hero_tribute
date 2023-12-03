@@ -26,7 +26,6 @@ class Game {
     this.score = 0
 
     // Constants
-    this.platformHeight = 100
     this.heroDistanceFromEdge = 10 // While waiting
     this.paddingX = 100 // Waiting position of hero
     this.perfectAreaSize = 10
@@ -49,6 +48,7 @@ class Game {
   init = () => {
     this.canvas.width = window.innerWidth
     this.canvas.height = window.innerHeight
+    this.platformHeight = this.canvas.height / 2
   }
 
   last = array => {
@@ -66,11 +66,7 @@ class Game {
     this.drawBackground()
 
     // Center main canvas area to the middle of the screen
-    // need to fix the pillars not being drawn full height
-    this.ctx.translate(
-      (window.innerWidth - this.canvas.width) / 2 - this.sceneOffset,
-      (window.innerHeight - this.canvas.width) / 2
-    )
+    this.ctx.translate(0 - this.sceneOffset, 0)
 
     // Draw scene
     this.drawPlatforms()
@@ -172,12 +168,7 @@ class Game {
     const lastStick = this.sticks[this.sticks.length - 1]
     this.platforms.forEach(({ x, w }) => {
       this.ctx.fillStyle = "black"
-      this.ctx.fillRect(
-        x,
-        this.canvas.height - this.platformHeight,
-        w,
-        this.platformHeight + (window.innerHeight - this.canvas.height / 2)
-      )
+      this.ctx.fillRect(x, this.canvas.height / 2, w, this.platformHeight)
 
       // Draw perfect area only if hero did not yet reach the platform
       if (lastStick.x < x) {
@@ -368,17 +359,15 @@ class Game {
         break
       }
       case "falling": {
-        if (lastStick.rotation < 180)
+        if (lastStick.rotation < 180) {
           lastStick.rotation += timePassed / this.turningSpeed
+        }
 
         this.heroY += timePassed / this.fallingSpeed
         const maxHeroY =
-          this.platformHeight +
-          100 +
-          (this.canvas.width - this.canvas.height) / 2
+          this.canvas.height - this.platformHeight + this.heroHeight + 10
         if (this.heroY > maxHeroY) {
           this.restartButton.style.display = "block"
-          return
         }
         break
       }
@@ -488,15 +477,9 @@ class Game {
     ]
 
     this.trees = []
-    this.generateTree()
-    this.generateTree()
-    this.generateTree()
-    this.generateTree()
-    this.generateTree()
-    this.generateTree()
-    this.generateTree()
-    this.generateTree()
-    this.generateTree()
+
+    // Generate trees
+    for (let i = 0; i < 10; i++) this.generateTree()
 
     // Initialize hero position
     this.heroX =
