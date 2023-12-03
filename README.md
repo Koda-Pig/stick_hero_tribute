@@ -7,3 +7,9 @@ https://www.freecodecamp.org/news/javascript-game-tutorial-stick-hero-with-html-
 - `npm run build`
 
 If you get an error when you try open the project in the browser, do a force refresh of the page then change the url from https:// to http://.
+
+TODO:
+
+- [ ] Add a high score system that keeps high score in browser storage
+- [ ] Add walking animation to hero
+- [ ] Make hero fall more natural - increase velocity

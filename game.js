@@ -28,7 +28,7 @@ class Game {
     // Constants
     this.heroDistanceFromEdge = 10 // While waiting
     this.paddingX = 100 // Waiting position of hero
-    this.perfectAreaSize = 10
+    this.perfectAreaSize = 16
     this.stretchingSpeed = 4 // Milliseconds it takes to draw a pixel
     this.turningSpeed = 4 // Milliseconds it takes to turn a degree
     this.walkingSpeed = 4
