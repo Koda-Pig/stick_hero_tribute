@@ -379,7 +379,7 @@ class Game {
         const maxHeroY =
           this.canvas.height - this.platformHeight + this.heroHeight + 10
         if (this.heroY > maxHeroY) {
-          this.restartButton.style.display = "block"
+          this.restartButton.classList.remove("hide")
         }
         break
       }
@@ -471,8 +471,8 @@ class Game {
     this.sceneOffset = 0
     this.score = 0
 
-    this.introductionElement.style.opacity = 1
-    this.restartButton.style.display = "none"
+    this.introductionElement.classList.remove("hide")
+    this.restartButton.classList.add("hide")
     this.scoreElement.innerText = this.score
 
     // The first platform is always the same
@@ -516,7 +516,7 @@ class Game {
     e.preventDefault()
     if (this.phase == "waiting") {
       this.lastTimestamp = undefined
-      this.introductionElement.style.opacity = 0
+      this.introductionElement.classList.add("hide")
       this.phase = "stretching"
       window.requestAnimationFrame(this.animate)
     }
@@ -540,7 +540,7 @@ class Game {
   handleRestart = (e, type) => {
     if (type === "click") {
       this.resetGame()
-      this.restartButton.style.display = "none"
+      this.restartButton.classList.add("hide")
     } else if (type === "keydown" && e.key === " ") {
       e.preventDefault()
       this.resetGame()
