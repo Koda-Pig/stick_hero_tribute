@@ -11,17 +11,24 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  --animation-duration: 1000ms;
 }
 
 html,
 body {
   height: 100%;
+  overflow: hidden;
 }
 
 body {
   display: grid;
   place-items: center;
   margin: 0;
+}
+
+p {
+  pointer-events: none;
 }
 
 button {
@@ -78,21 +85,63 @@ a {
   right: 30px;
   font-size: 2em;
   font-weight: 900;
+  text-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 }
 
 #restart {
+  top: 30%;
   position: absolute;
   display: none;
 }
 
 #perfect {
-  position: absolute;
+  top: 30%;
   opacity: 0;
-  font-size: 30px;
-  transition: opacity 2s;
+  display: grid;
+  font-size: 3rem;
+  position: absolute;
+  place-items: center;
+  transition: 0.3s opacity ease;
+  text-shadow: 0 0 6px rgba(0 0 0 / 0.7);
+
+  &::after {
+    content: "";
+    width: 0;
+    top: 50%;
+    aspect-ratio: 1;
+    position: absolute;
+    border-radius: 50%;
+    transform: translateY(-50%);
+    background: radial-gradient(transparent 50%, rgba(#659f1c, 0.3) 75%);
+  }
+
+  &.highlight {
+    opacity: 1;
+
+    &::after {
+      animation-name: congratz;
+      animation-duration: var(--animation-duration);
+    }
+  }
 }
 
 #introduction {
   position: absolute;
   bottom: 8px;
+}
+
+@keyframes congratz {
+  0% {
+    width: 0;
+    opacity: 0;
+  }
+
+  50% {
+    opacity: 1;
+  }
+
+  100% {
+    width: 300%;
+    opacity: 0;
+  }
 }

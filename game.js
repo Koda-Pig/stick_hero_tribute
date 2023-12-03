@@ -49,6 +49,7 @@ class Game {
     this.canvas.width = window.innerWidth
     this.canvas.height = window.innerHeight
     this.platformHeight = this.canvas.height / 2
+    this.getAnimationDuration()
   }
 
   last = array => {
@@ -57,6 +58,14 @@ class Game {
 
   sinus = degree => {
     return Math.sin((degree / 180) * Math.PI)
+  }
+
+  getAnimationDuration = () => {
+    // get animation duration from global css variable declared on the :root as --animation-duration:
+    const styles = getComputedStyle(document.documentElement)
+    this.perfectAnimationDuration = parseInt(
+      styles.getPropertyValue("--animation-duration")
+    )
   }
 
   draw = () => {
@@ -305,8 +314,11 @@ class Game {
             this.scoreElement.innerText = this.score
 
             if (perfectHit) {
-              this.perfectElement.style.opacity = 1
-              setTimeout(() => (this.perfectElement.style.opacity = 0), 1000)
+              this.perfectElement.classList.add("highlight")
+
+              setTimeout(() => {
+                this.perfectElement.classList.remove("highlight")
+              }, this.perfectAnimationDuration)
             }
 
             this.generatePlatform()
@@ -459,7 +471,6 @@ class Game {
     this.score = 0
 
     this.introductionElement.style.opacity = 1
-    this.perfectElement.style.opacity = 0
     this.restartButton.style.display = "none"
     this.scoreElement.innerText = this.score
 
