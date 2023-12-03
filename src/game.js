@@ -510,6 +510,7 @@ class Game {
     // Play track if game is first time initialized
     if (this.gameInit) {
       this.playTrack(0)
+      this.restartButton.innerText = "RESTART"
       this.canvas.classList.add("active")
     }
 
