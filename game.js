@@ -33,7 +33,8 @@ class Game {
     this.turningSpeed = 4 // Milliseconds it takes to turn a degree
     this.walkingSpeed = 4
     this.transitioningSpeed = 2
-    this.fallingSpeed = 2 // The background moves slower than the hero
+    this.fallingSpeed = 0.5 // The background moves slower than the hero
+    this.fallingAcceleration = 0.007
     this.backgroundSpeedMultiplier = 0.2
     this.hill1BaseHeight = 100
     this.hill1Amplitude = 10
@@ -375,7 +376,9 @@ class Game {
           lastStick.rotation += timePassed / this.turningSpeed
         }
 
-        this.heroY += timePassed / this.fallingSpeed
+        this.fallingSpeed += this.fallingAcceleration * timePassed
+        this.heroY += this.fallingSpeed * timePassed
+
         const maxHeroY =
           this.canvas.height - this.platformHeight + this.heroHeight + 10
         if (this.heroY > maxHeroY) {
@@ -470,6 +473,7 @@ class Game {
     this.lastTimestamp = undefined
     this.sceneOffset = 0
     this.score = 0
+    this.fallingSpeed = 0.5
 
     this.introductionElement.classList.remove("hide")
     this.restartButton.classList.add("hide")

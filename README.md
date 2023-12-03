@@ -12,4 +12,4 @@ TODO:
 
 - [ ] Add a high score system that keeps high score in browser storage
 - [ ] Add walking animation to hero
-- [ ] Make hero fall more natural - increase velocity
+- [x] Make hero fall more natural - increase velocity
