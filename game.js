@@ -414,8 +414,9 @@ class Game {
         platformTheStickHits.x +
           platformTheStickHits.w / 2 +
           this.perfectAreaSize / 2
-    )
+    ) {
       return [platformTheStickHits, true]
+    }
 
     return [platformTheStickHits, false]
   }
