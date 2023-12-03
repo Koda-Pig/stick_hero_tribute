@@ -27,6 +27,7 @@ class Game {
     this.sceneOffset // Moves the whole game
     this.platforms = []
     this.sticks = []
+    this.soundEffects = {}
     this.score = 0
     this.highscore = localStorage.getItem("stick-hero-tribute-highscore") || 0 // check if a high score is saved in user browser
 
@@ -56,6 +57,7 @@ class Game {
     this.canvas.height = window.innerHeight
     this.platformHeight = this.canvas.height / 2
     this.getAnimationDuration()
+    this.createSoundEffects()
   }
 
   last = array => {
@@ -291,6 +293,12 @@ class Game {
   }
 
   animate = timestamp => {
+    // Either the width of the canvas or half of it's height
+    const maxLength =
+      this.canvas.width > this.canvas.height / 2
+        ? this.canvas.height / 2
+        : this.canvas.width
+
     if (!this.lastTimestamp) {
       this.lastTimestamp = timestamp
       window.requestAnimationFrame(this.animate)
@@ -305,9 +313,18 @@ class Game {
         return // Stop the loop
       case "stretching": {
         lastStick.length += timePassed / this.stretchingSpeed
+        this.soundEffects["stretching"].play()
+
+        // Prevent the stick from stretching too far
+        if (lastStick.length > maxLength) {
+          lastStick.length = maxLength
+          this.phase = "turning"
+        }
         break
       }
       case "turning": {
+        this.pauseSoundEffect("stretching")
+
         lastStick.rotation += timePassed / this.turningSpeed
 
         if (lastStick.rotation > 90) {
@@ -321,6 +338,7 @@ class Game {
 
             if (perfectHit) {
               this.perfectElement.classList.add("highlight")
+              this.soundEffects["perfect"].play()
 
               setTimeout(() => {
                 this.perfectElement.classList.remove("highlight")
@@ -338,6 +356,9 @@ class Game {
       }
       case "walking": {
         this.heroX += timePassed / this.walkingSpeed
+
+        // Play walking sound
+        this.soundEffects["walking"].play()
 
         const [nextPlatform] = this.thePlatformTheStickHits()
         if (nextPlatform) {
@@ -359,6 +380,8 @@ class Game {
         break
       }
       case "transitioning": {
+        this.soundEffects["walking"].pause()
+
         this.sceneOffset += timePassed / this.transitioningSpeed
 
         const [nextPlatform] = this.thePlatformTheStickHits()
@@ -377,6 +400,9 @@ class Game {
         break
       }
       case "falling": {
+        this.soundEffects["walking"].pause()
+        this.soundEffects["falling"].play()
+
         if (lastStick.rotation < 180) {
           lastStick.rotation += timePassed / this.turningSpeed
         }
@@ -391,7 +417,6 @@ class Game {
         if (this.heroY > maxHeroY) {
           this.restartButton.classList.remove("hide")
           this.gameOver = true
-          console.log(this.highscoreElement)
           this.handleHighScore()
         }
         break
@@ -574,7 +599,31 @@ class Game {
       this.highscore = this.score
       this.highscoreElement.innerText = this.highscore
       this.congratsElement.classList.add("highlight")
+      this.soundEffects["perfect"].play()
     }
+  }
+
+  // Create sound effects
+  createSoundEffects = () => {
+    // Stretching sound
+    this.soundEffects.stretching = new Audio("/cartoon-rise.wav")
+    this.soundEffects.stretching.currentTime = 0.1
+    this.soundEffects.stretching.playbackRate = 0.3
+
+    // Walking sound
+    this.soundEffects.walking = new Audio("/scuttle.wav")
+
+    // Falling sound
+    this.soundEffects.falling = new Audio("/falling.wav")
+    this.soundEffects.falling.playbackRate = 4
+
+    // Perfect / new high score sound
+    this.soundEffects.perfect = new Audio("/win.wav")
+  }
+
+  pauseSoundEffect = sound => {
+    this.soundEffects[sound].pause()
+    this.soundEffects[sound].currentTime = 0
   }
 
   addEventListeners = () => {
