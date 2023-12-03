@@ -532,6 +532,8 @@ class Game {
   handleResize = () => {
     this.canvas.width = window.innerWidth
     this.canvas.height = window.innerHeight
+    this.platformHeight = this.canvas.height / 2
+    this.draw()
   }
 
   // handle restart button click
