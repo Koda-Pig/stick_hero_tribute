@@ -616,22 +616,22 @@ class Game {
   // Create sound effects
   loadSoundEffects = () => {
     // Stretching sound
-    this.soundEffects.stretching = new Audio("/cartoon-rise.wav")
+    this.soundEffects.stretching = new Audio("./sound-effects/cartoon-rise.wav")
     this.soundEffects.stretching.currentTime = 0.2
     this.soundEffects.stretching.playbackRate = 0.3
     this.soundEffects.stretching.volume = 0.3
 
     // Walking sound
-    this.soundEffects.walking = new Audio("/scuttle.wav")
+    this.soundEffects.walking = new Audio("./sound-effects/scuttle.wav")
     this.soundEffects.walking.volume = 0.4
 
     // Falling sound
-    this.soundEffects.falling = new Audio("/falling.wav")
+    this.soundEffects.falling = new Audio("./sound-effects/falling.wav")
     this.soundEffects.falling.playbackRate = 10
     this.soundEffects.falling.volume = 0.3
 
     // Perfect/new highscore sound
-    this.soundEffects.perfect = new Audio("/win.wav")
+    this.soundEffects.perfect = new Audio("./sound-effects/win.wav")
     this.soundEffects.perfect.volume = 0.3
 
     Object.values(this.soundEffects).forEach(sound => {
@@ -642,7 +642,7 @@ class Game {
 
     // Load sountrack
     this.soundtrack = []
-    fetch("./tracklist.json")
+    fetch("./data/tracklist.json")
       .then(response => response.json())
       .then(data => {
         this.soundtrack = data.map(track => {
