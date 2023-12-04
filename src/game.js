@@ -183,21 +183,18 @@ class Game {
   }
 
   drawPlatforms = () => {
-    const lastStick = this.sticks[this.sticks.length - 1]
     this.platforms.forEach(({ x, w }) => {
       this.ctx.fillStyle = "black"
       this.ctx.fillRect(x, this.canvas.height / 2, w, this.platformHeight)
 
-      // Draw perfect area only if hero did not yet reach the platform
-      if (lastStick.x < x) {
-        this.ctx.fillStyle = "red"
-        this.ctx.fillRect(
-          x + w / 2 - this.perfectAreaSize / 2,
-          this.canvas.height - this.platformHeight,
-          this.perfectAreaSize,
-          this.perfectAreaSize
-        )
-      }
+      // Draw perfect area
+      this.ctx.fillStyle = "red"
+      this.ctx.fillRect(
+        x + w / 2 - this.perfectAreaSize / 2,
+        this.canvas.height - this.platformHeight,
+        this.perfectAreaSize,
+        this.perfectAreaSize
+      )
     })
   }
 
@@ -314,7 +311,7 @@ class Game {
         return // Stop the loop
       case "stretching": {
         lastStick.length += timePassed / this.stretchingSpeed
-        this.soundEffects["stretching"].play()
+        this.soundEffects.stretching.play()
 
         // Prevent the stick from stretching too far
         if (lastStick.length > maxLength) {
@@ -324,7 +321,8 @@ class Game {
         break
       }
       case "turning": {
-        this.pauseSoundEffect("stretching")
+        this.soundEffects.stretching.pause()
+        this.soundEffects.stretching.currentTime = 0.2
 
         lastStick.rotation += timePassed / this.turningSpeed
 
@@ -339,7 +337,7 @@ class Game {
 
             if (perfectHit) {
               this.perfectElement.classList.add("highlight")
-              this.soundEffects["perfect"].play()
+              this.soundEffects.perfect.play()
 
               setTimeout(() => {
                 this.perfectElement.classList.remove("highlight")
@@ -359,7 +357,7 @@ class Game {
         this.heroX += timePassed / this.walkingSpeed
 
         // Play walking sound
-        this.soundEffects["walking"].play()
+        this.soundEffects.walking.play()
 
         const [nextPlatform] = this.thePlatformTheStickHits()
         if (nextPlatform) {
@@ -381,8 +379,8 @@ class Game {
         break
       }
       case "transitioning": {
-        this.soundEffects["walking"].pause()
-        this.soundEffects["walking"].currentTime = 0
+        this.soundEffects.walking.pause()
+        this.soundEffects.walking.currentTime = 0
 
         this.sceneOffset += timePassed / this.transitioningSpeed
 
@@ -402,8 +400,8 @@ class Game {
         break
       }
       case "falling": {
-        this.soundEffects["walking"].pause()
-        this.soundEffects["falling"].play()
+        this.soundEffects.walking.pause()
+        this.soundEffects.falling.play()
 
         this.fallingSpeed += this.fallingAcceleration * timePassed
         this.heroY += this.fallingSpeed * timePassed
@@ -578,9 +576,7 @@ class Game {
 
   // handle mouse up/ touch end
   handleRelease = () => {
-    if (this.phase == "stretching") {
-      this.phase = "turning"
-    }
+    if (this.phase == "stretching") this.phase = "turning"
   }
 
   handleResize = () => {
@@ -606,13 +602,12 @@ class Game {
 
   // handle high score
   handleHighScore = () => {
-    if (this.score > this.highscore) {
-      localStorage.setItem("stick-hero-tribute-highscore", this.score)
-      this.highscore = this.score
-      this.highscoreElement.innerText = this.highscore
-      this.congratsElement.classList.add("highlight")
-      this.soundEffects["perfect"].play()
-    }
+    if (this.score <= this.highscore) return
+    localStorage.setItem("stick-hero-tribute-highscore", this.score)
+    this.highscore = this.score
+    this.highscoreElement.innerText = this.highscore
+    this.congratsElement.classList.add("highlight")
+    this.soundEffects.perfect.play()
   }
 
   // Create sound effects
@@ -642,7 +637,7 @@ class Game {
       sound.load()
     })
 
-    // Load sountrack
+    // Load soundtrack
     this.soundtrack = []
     fetch("./data/tracklist.json")
       .then(response => response.json())
@@ -661,11 +656,6 @@ class Game {
     this.soundtrack[trackindex].play()
     this.currentTrack = trackindex
     this.soundtrack[trackindex].onended = () => this.playTrack(trackindex + 1)
-  }
-
-  pauseSoundEffect = sound => {
-    this.soundEffects[sound].pause()
-    this.soundEffects[sound].currentTime = 0
   }
 
   addEventListeners = () => {
