@@ -32,8 +32,13 @@ class Game {
     this.soundEffects = {}
     this.score = 0
     this.highscore = localStorage.getItem("stick-hero-tribute-highscore") || 0 // check if a high score is saved in user browser
+    this.highscore = 0
     this.gameOver = true
     this.gameInit = false
+    this.volume = {
+      music: 0.5,
+      soundEffects: 0.5,
+    }
 
     // Constants
     this.heroDistanceFromEdge = 10 // While waiting
@@ -63,6 +68,7 @@ class Game {
     this.platformHeight = this.canvas.height / 2
     this.getAnimationDuration()
     this.loadSoundEffects()
+    this.addEventListeners()
     this.gameInit = true
   }
 
@@ -585,25 +591,24 @@ class Game {
     this.soundEffects.stretching = new Audio("./sound-effects/cartoon-rise.wav")
     this.soundEffects.stretching.currentTime = 0.2
     this.soundEffects.stretching.playbackRate = 0.3
-    this.soundEffects.stretching.volume = 0.3
 
     // Walking sound
     this.soundEffects.walking = new Audio("./sound-effects/scuttle.wav")
-    this.soundEffects.walking.volume = 0.4
 
     // Falling sound
     this.soundEffects.falling = new Audio("./sound-effects/falling.wav")
     this.soundEffects.falling.playbackRate = 10
-    this.soundEffects.falling.volume = 0.3
 
     // Perfect/new highscore sound
     this.soundEffects.perfect = new Audio("./sound-effects/win.wav")
-    this.soundEffects.perfect.volume = 0.3
 
     Object.values(this.soundEffects).forEach(sound => {
       // Preload all of the sound effects
       sound.preload = "auto"
       sound.load()
+
+      // Set volume
+      sound.volume = this.volume.soundEffects
     })
 
     // Load soundtrack
@@ -614,10 +619,28 @@ class Game {
         this.soundtrack = data.map(track => {
           let audio = new Audio(track.url)
           audio.preload = "auto"
+          audio.volume = this.volume.music
           return audio
         })
       })
       .catch(error => console.error(error))
+  }
+
+  // Set volume
+  setVolume = (id, volume) => {
+    if (id === "music-volume") {
+      this.volume.music = volume
+      this.soundtrack.forEach(track => {
+        track.volume = this.volume.music
+      })
+      console.log("change")
+    }
+    if (id === "effects-volume") {
+      this.volume.soundEffects = volume
+      Object.values(this.soundEffects).forEach(sound => {
+        sound.volume = this.volume.soundEffects
+      })
+    }
   }
 
   // Play soundtrack

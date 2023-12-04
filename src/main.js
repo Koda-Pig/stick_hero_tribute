@@ -1,7 +1,9 @@
 import "./style.scss"
 import Game from "./game.js"
+import Controls from "./controls.js"
 
 // Getting nodes
+//// For game
 const canvas = document.getElementById("game")
 const scoreElem = document.getElementById("score")
 const highscoreElem = document.getElementById("high-score")
@@ -10,6 +12,9 @@ const introElem = document.getElementById("introduction")
 const perfElem = document.getElementById("perfect")
 const congratsElem = document.getElementById("congrats")
 const scoreContainer = document.getElementById("score-container")
+//// For controls
+const controlsBtn = document.getElementById("controls-btn")
+const controlsWrapper = document.getElementById("controls-wrapper")
 
 // Creating a new game instance
 const game = new Game(
@@ -22,5 +27,8 @@ const game = new Game(
   congratsElem,
   scoreContainer
 )
-game.addEventListeners()
 game.init()
+
+// Creating a new controls instance
+const controls = new Controls(controlsBtn, controlsWrapper, game)
+controls.init()

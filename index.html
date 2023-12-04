@@ -7,12 +7,57 @@
     <title>Stick Hero Tribute</title>
   </head>
   <body>
-    <div class="container">
+    <button
+      role="button"
+      id="controls-btn"
+      class="controls-btn"
+      aria-label="Open controls"
+      aria-expanded="false"
+    >
+      <svg viewBox="-10 -10 120 120">
+        <path
+          d="m 20 40 h 60 a 1 1 0 0 1 0 20 h -60 a 1 1 0 0 1 0 -40 h 30 v 70"
+        />
+      </svg>
+    </button>
+    <aside class="controls-wrapper" id="controls-wrapper" aria-hidden="true">
+      <div class="controls-wrapper-inner">
+        <p class="title">Sound effects volume</p>
+        <div class="controls-item">
+          <label class="visually-hidden" for="effects-volume"
+            >sound effects volume</label
+          >
+          <input
+            type="range"
+            id="effects-volume"
+            name="effects-volume"
+            min="0"
+            max="1"
+            step="0.1"
+            value="0.5"
+          />
+        </div>
+        <p class="title">Music volume</p>
+        <div class="controls-item">
+          <label class="visually-hidden" for="music-volume">music volume</label>
+          <input
+            type="range"
+            id="music-volume"
+            name="music-volume"
+            min="0"
+            max="1"
+            step="0.1"
+            value="0.5"
+          />
+        </div>
+      </div>
+    </aside>
+    <main class="container">
       <div class="score-container hide" id="score-container">
-        <p class="score-description">score</p>
         <p class="score" id="score"></p>
-        <p class="score-description">high score</p>
+        <p class="score-description">score</p>
         <p class="score" id="high-score"></p>
+        <p class="score-description">high score</p>
       </div>
       <canvas id="game" width="375" height="375"></canvas>
       <div id="introduction">
@@ -23,8 +68,10 @@
       <!-- add a set of positive reactions to perfect scores, rotate randomly -->
       <p class="alert" id="perfect">PERFECT!</p>
       <p class="alert" id="congrats">NEW HIGH SCORE!</p>
-      <button id="restart" type="button" aria-label="restart">START</button>
-    </div>
+      <button id="restart" class="button" type="button" aria-label="restart">
+        START
+      </button>
+    </main>
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>
