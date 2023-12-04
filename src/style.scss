@@ -25,6 +25,7 @@ body {
   display: grid;
   place-items: center;
   margin: 0;
+  overflow: hidden;
 }
 
 p {
@@ -245,7 +246,7 @@ canvas {
   }
 
   &-wrapper {
-    position: absolute;
+    position: fixed;
     inset: 0;
     background: #16161d;
     z-index: 2;
