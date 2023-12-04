@@ -32,7 +32,7 @@ class Game {
     this.soundEffects = {}
     this.score = 0
     this.highscore = localStorage.getItem("stick-hero-tribute-highscore") || 0 // check if a high score is saved in user browser
-    this.gameOver
+    this.gameOver = true
     this.gameInit = false
 
     // Constants
@@ -52,10 +52,11 @@ class Game {
     this.hill2BaseHeight = 70
     this.hill2Amplitude = 20
     this.hill2Stretch = 0.5
-    this.heroWidth = 17 // 24
-    this.heroHeight = 30 // 40
+    this.heroWidth = 17
+    this.heroHeight = 30
   }
 
+  // Initialize game
   init = () => {
     this.canvas.width = window.innerWidth
     this.canvas.height = window.innerHeight
@@ -65,10 +66,12 @@ class Game {
     this.gameInit = true
   }
 
+  // Sinus function that takes degrees instead of radians
   sinus = degree => {
     return Math.sin((degree / 180) * Math.PI)
   }
 
+  // Get animation duration from global css variable
   getAnimationDuration = () => {
     // get animation duration from global css variable declared on the :root as --animation-duration:
     const styles = getComputedStyle(document.documentElement)
@@ -77,6 +80,7 @@ class Game {
     )
   }
 
+  // Draw the whole scene
   draw = () => {
     this.ctx.save()
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
@@ -95,6 +99,7 @@ class Game {
     this.ctx.restore()
   }
 
+  // Draw the background
   drawBackground = () => {
     // Draw sky
     const gradient = this.ctx.createLinearGradient(0, 0, 0, window.innerHeight)
@@ -121,6 +126,7 @@ class Game {
     this.trees.forEach(tree => this.drawTree(tree.x, tree.color))
   }
 
+  // Draw a hill
   drawHill = (baseHeight, amplitude, stretch, color) => {
     this.ctx.beginPath()
     this.ctx.moveTo(0, window.innerHeight)
@@ -133,22 +139,7 @@ class Game {
     this.ctx.fill()
   }
 
-  getHillY = (windowX, baseHeight, amplitude, stretch) => {
-    const sineBaseY = window.innerHeight - baseHeight
-    return (
-      this.sinus(
-        (this.sceneOffset * this.backgroundSpeedMultiplier + windowX) * stretch
-      ) *
-        amplitude +
-      sineBaseY
-    )
-  }
-
-  getTreeY = (x, baseHeight, amplitude) => {
-    const sineBaseY = window.innerHeight - baseHeight
-    return this.sinus(x) * amplitude + sineBaseY
-  }
-
+  // Draw a tree
   drawTree = (x, color) => {
     this.ctx.save()
     this.ctx.translate(
@@ -182,6 +173,7 @@ class Game {
     this.ctx.restore()
   }
 
+  // Draw all platforms
   drawPlatforms = () => {
     this.platforms.forEach(({ x, w }) => {
       this.ctx.fillStyle = "black"
@@ -198,6 +190,7 @@ class Game {
     })
   }
 
+  // Draw a rounded rectangle
   drawRoundedRect = (x, y, width, height, radius) => {
     this.ctx.beginPath()
     this.ctx.moveTo(x, y + radius)
@@ -218,6 +211,7 @@ class Game {
     this.ctx.fill()
   }
 
+  // Draw the hero
   drawHero = () => {
     this.ctx.save()
     this.ctx.fillStyle = "black"
@@ -270,6 +264,7 @@ class Game {
     this.ctx.restore()
   }
 
+  // Draw all sticks
   drawSticks = () => {
     this.sticks.forEach(stick => {
       this.ctx.save()
@@ -290,6 +285,25 @@ class Game {
     })
   }
 
+  // Get the y coordinate of a hill
+  getHillY = (windowX, baseHeight, amplitude, stretch) => {
+    const sineBaseY = window.innerHeight - baseHeight
+    return (
+      this.sinus(
+        (this.sceneOffset * this.backgroundSpeedMultiplier + windowX) * stretch
+      ) *
+        amplitude +
+      sineBaseY
+    )
+  }
+
+  // Get the y coordinate of a tree
+  getTreeY = (x, baseHeight, amplitude) => {
+    const sineBaseY = window.innerHeight - baseHeight
+    return this.sinus(x) * amplitude + sineBaseY
+  }
+
+  // The main animation loop
   animate = timestamp => {
     // Either the width of the canvas or half of it's height
     const maxLength =
@@ -433,6 +447,7 @@ class Game {
     this.lastTimestamp = timestamp
   }
 
+  // Returns the platform the stick hits and whether it hits the perfect area
   thePlatformTheStickHits = () => {
     const lastStick = this.sticks[this.sticks.length - 1]
 
@@ -553,6 +568,7 @@ class Game {
     this.draw()
   }
 
+  // Returns the total width of all platforms
   totalPlatformWidth = () => {
     // Use reduce to find the rightmost edge of the platforms
     const totalPlatformWidth = this.platforms.reduce((max, platform) => {
@@ -561,53 +577,6 @@ class Game {
     }, 0)
 
     return totalPlatformWidth
-  }
-
-  // handle mouse down/ touch start
-  handleClick = e => {
-    e.preventDefault()
-    if (this.phase == "waiting") {
-      this.lastTimestamp = undefined
-      this.introductionElement.classList.add("hide")
-      this.phase = "stretching"
-      window.requestAnimationFrame(this.animate)
-    }
-  }
-
-  // handle mouse up/ touch end
-  handleRelease = () => {
-    if (this.phase == "stretching") this.phase = "turning"
-  }
-
-  handleResize = () => {
-    this.canvas.width = window.innerWidth
-    this.canvas.height = window.innerHeight
-    this.platformHeight = this.canvas.height / 2
-    // Do not draw if game is over or not started yet
-    if (!this.gameOver) return
-    this.draw()
-  }
-
-  // handle restart button click
-  handleRestart = (e, type) => {
-    if (type === "click") {
-      this.resetGame()
-      this.restartButton.classList.add("hide")
-    } else if (type === "keydown" && e.key === " ") {
-      e.preventDefault()
-      this.resetGame()
-      return
-    }
-  }
-
-  // handle high score
-  handleHighScore = () => {
-    if (this.score <= this.highscore) return
-    localStorage.setItem("stick-hero-tribute-highscore", this.score)
-    this.highscore = this.score
-    this.highscoreElement.innerText = this.highscore
-    this.congratsElement.classList.add("highlight")
-    this.soundEffects.perfect.play()
   }
 
   // Create sound effects
@@ -651,6 +620,7 @@ class Game {
       .catch(error => console.error(error))
   }
 
+  // Play soundtrack
   playTrack(trackindex) {
     if (trackindex >= this.soundtrack.length) trackindex = 0
     this.soundtrack[trackindex].play()
@@ -658,6 +628,55 @@ class Game {
     this.soundtrack[trackindex].onended = () => this.playTrack(trackindex + 1)
   }
 
+  // handle mouse down/ touch start
+  handleClick = e => {
+    e.preventDefault()
+    if (this.phase == "waiting") {
+      this.lastTimestamp = undefined
+      this.introductionElement.classList.add("hide")
+      this.phase = "stretching"
+      window.requestAnimationFrame(this.animate)
+    }
+  }
+
+  // handle mouse up/ touch end
+  handleRelease = () => {
+    if (this.phase == "stretching") this.phase = "turning"
+  }
+
+  // handle window resize
+  handleResize = () => {
+    this.canvas.width = window.innerWidth
+    this.canvas.height = window.innerHeight
+    this.platformHeight = this.canvas.height / 2
+    // Do not draw if game is over or not started yet
+    if (this.gameOver) return
+    this.draw()
+  }
+
+  // handle restart button click
+  handleRestart = (e, type) => {
+    if (type === "click") {
+      this.resetGame()
+      this.restartButton.classList.add("hide")
+    } else if (type === "keydown" && e.key === " ") {
+      e.preventDefault()
+      this.resetGame()
+      return
+    }
+  }
+
+  // handle high score
+  handleHighScore = () => {
+    if (this.score <= this.highscore) return
+    localStorage.setItem("stick-hero-tribute-highscore", this.score)
+    this.highscore = this.score
+    this.highscoreElement.innerText = this.highscore
+    this.congratsElement.classList.add("highlight")
+    this.soundEffects.perfect.play()
+  }
+
+  // Add event listeners
   addEventListeners = () => {
     this.canvas.addEventListener("mousedown", e => this.handleClick(e))
     this.canvas.addEventListener("touchstart", e => this.handleClick(e))
