@@ -587,6 +587,8 @@ class Game {
     this.canvas.width = window.innerWidth
     this.canvas.height = window.innerHeight
     this.platformHeight = this.canvas.height / 2
+    // Do not draw if game is over or not started yet
+    if (!this.gameOver) return
     this.draw()
   }
 
