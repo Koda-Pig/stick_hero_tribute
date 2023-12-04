@@ -32,7 +32,6 @@ class Game {
     this.soundEffects = {}
     this.score = 0
     this.highscore = localStorage.getItem("stick-hero-tribute-highscore") || 0 // check if a high score is saved in user browser
-    this.highscore = 0
     this.gameOver = true
     this.gameInit = false
     this.volume = {
