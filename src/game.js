@@ -36,6 +36,7 @@ class Game {
       music: 0.5,
       soundEffects: 0.5,
     }
+    this.spritesLoaded = false
 
     // Constants
     this.paddingX = 100 // Waiting position of player
@@ -45,7 +46,7 @@ class Game {
     this.walkingSpeed = 4
     this.transitioningSpeed = 2
     this.fallingSpeed = 0.5 // The background moves slower than the player
-    this.fallingAcceleration = 0.007
+    this.fallingAcceleration = 0.005
     this.backgroundSpeedMultiplier = 0.2
     this.hill1BaseHeight = 100
     this.hill1Amplitude = 10
@@ -54,12 +55,27 @@ class Game {
     this.hill2Amplitude = 20
     this.hill2Stretch = 0.5
 
+    // Player
+    /* Player sprite sheet is 768 x 768
+     * There are 8 rows and 8 columns
+     * Each frame is 96 x 96
+     */
     this.player = {
       x: 0,
       y: 0, // Only changes when falling
-      width: 16,
-      height: 30,
-      distanceFromEdge: 10, // While waiting
+      width: 96,
+      height: 96,
+      distanceFromEdge: 60, // While waiting
+      frameX: 0,
+      frameY: 0,
+      maxFrame: 7, // 8 total frames, 0 indexed
+      sprite: new Image(),
+    }
+    this.player.sprite.src = "./images/sprites/monster.png"
+    // ensure player sprite is loaded before drawing
+    // but do not draw it on the canvas yet
+    this.player.sprite.onload = () => {
+      this.spritesLoaded = true
     }
   }
 
@@ -196,6 +212,11 @@ class Game {
         this.perfectAreaSize
       )
     })
+
+    // Remove platforms that are no longer in the viewport:
+    this.platforms = this.platforms.filter(
+      platform => platform.x + platform.w > this.sceneOffset
+    )
   }
 
   // Draw a rounded rectangle
@@ -221,60 +242,47 @@ class Game {
 
   // Draw the player
   drawPlayer = () => {
+    if (!this.spritesLoaded) return
     this.ctx.save()
-    this.ctx.fillStyle = "black"
     this.ctx.translate(
       this.player.x - this.player.width / 2,
       this.player.y +
         this.canvas.height -
         this.platformHeight -
-        this.player.height / 2
+        this.player.height * 1.17
     )
 
-    // Body
-    this.drawRoundedRect(
-      -this.player.width / 2,
-      -this.player.height / 2,
+    // Draw sprite
+    this.drawSprite(
+      this.player.sprite,
+      this.player.width * this.player.frameX, // sX
+      this.player.height * this.player.frameY, // sY
+      this.player.width, // sWidth
+      this.player.height, // sHeight
+      this.player.width / 2, // dX (center the sprite)
+      this.player.height / 2, // dY (center the sprite)
       this.player.width,
-      this.player.height - 4,
-      5
+      this.player.height
     )
 
-    // Legs
-    const legDistance = 5
-    this.ctx.beginPath()
-    this.ctx.arc(legDistance, 11.5, 3, 0, Math.PI * 2, false)
-    this.ctx.fill()
-    this.ctx.beginPath()
-    this.ctx.arc(-legDistance, 11.5, 3, 0, Math.PI * 2, false)
-    this.ctx.fill()
-
-    // Eye
-    this.ctx.beginPath()
-    this.ctx.fillStyle = "white"
-    this.ctx.arc(5, -7, 3, 0, Math.PI * 2, false)
-    this.ctx.fill()
-
-    // Band
-    this.ctx.fillStyle = "red"
-    this.ctx.fillRect(
-      -this.player.width / 2 - 1,
-      -12,
-      this.player.width + 2,
-      4.5
-    )
-    this.ctx.beginPath()
-    this.ctx.moveTo(-9, -14.5)
-    this.ctx.lineTo(-17, -18.5)
-    this.ctx.lineTo(-14, -8.5)
-    this.ctx.fill()
-    this.ctx.beginPath()
-    this.ctx.moveTo(-10, -10.5)
-    this.ctx.lineTo(-15, -3.5)
-    this.ctx.lineTo(-5, -7)
-    this.ctx.fill()
+    // Animate sprite
+    if (this.player.frameX < this.player.maxFrame) this.player.frameX++
+    else this.player.frameX = 0
 
     this.ctx.restore()
+  }
+
+  // Draw sprite
+  drawSprite = (img, sX, sY, sW, sH, dX, dY, dW, dH) => {
+    /* img: image object
+     * sX: x coordinate of the top left corner of the source image
+     * sY: y coordinate of the top left corner of the source image
+     * sW: width of the source image
+     * sH: height of the source image
+     * dX: x coordinate in the canvas at which to place the top left corner of the source image
+     * dY: y coordinate in the canvas at which to place the top left corner of the source image
+     */
+    this.ctx.drawImage(img, sX, sY, sW, sH, dX, dY, dW, dH)
   }
 
   // Draw all sticks
@@ -296,19 +304,12 @@ class Game {
       // Restore transformations
       this.ctx.restore()
     })
-  }
 
-  // Draw sprite
-  /* img: image object
-   * sX: x coordinate of the top left corner of the source image
-   * sY: y coordinate of the top left corner of the source image
-   * sW: width of the source image
-   * sH: height of the source image
-   * dX: x coordinate in the canvas at which to place the top left corner of the source image
-   * dY: y coordinate in the canvas at which to place the top left corner of the source image
-   */
-  drawSprite = (img, sX, sY, sW, sH, dX, dY, dW, dH) => {
-    this.ctx.drawImage(img, sX, sY, sW, sH, dX, dY, dW, dH)
+    // Remove sticks that are no longer in the viewport,
+    // after the player has walked past them and thePlatformTheStickHits() has been called
+    this.sticks = this.sticks.filter(
+      stick => stick.x > this.sceneOffset - this.canvas.width
+    )
   }
 
   // Get the y coordinate of a hill
@@ -348,8 +349,10 @@ class Game {
 
     switch (this.phase) {
       case "waiting":
+        this.player.frameY = 0
         return // Stop the loop
       case "stretching": {
+        this.player.frameY = 0
         lastStick.length += timePassed / this.stretchingSpeed
         this.soundEffects.stretching.play()
 
@@ -361,6 +364,7 @@ class Game {
         break
       }
       case "turning": {
+        this.player.frameY = 0
         this.soundEffects.stretching.pause()
         this.soundEffects.stretching.currentTime = 0.2
 
@@ -394,6 +398,8 @@ class Game {
         break
       }
       case "walking": {
+        this.player.frameY = 1
+
         this.player.x += timePassed / this.walkingSpeed
 
         // Play walking sound
@@ -402,15 +408,16 @@ class Game {
         const [nextPlatform] = this.thePlatformTheStickHits()
         if (nextPlatform) {
           // If player will reach another platform then limit it's position at it's edge
-          const maxPlayerX =
-            nextPlatform.x + nextPlatform.w - this.player.distanceFromEdge
+          const offsetNext = 58
+          const maxPlayerX = nextPlatform.x + nextPlatform.w - offsetNext
           if (this.player.x > maxPlayerX) {
             this.player.x = maxPlayerX
             this.phase = "transitioning"
           }
         } else {
           // If player won't reach another platform then limit it's position at the end of the pole
-          const maxPlayerX = lastStick.x + lastStick.length + this.player.width
+          const offsetEnd = 30
+          const maxPlayerX = lastStick.x + lastStick.length - offsetEnd
           if (this.player.x > maxPlayerX) {
             this.player.x = maxPlayerX
             this.phase = "falling"
@@ -440,6 +447,9 @@ class Game {
         break
       }
       case "falling": {
+        // need to create another sprite for falling
+        this.player.frameY = 0
+
         this.soundEffects.walking.pause()
         this.soundEffects.falling.play()
 
@@ -609,7 +619,6 @@ class Game {
   loadSoundEffects = () => {
     // Stretching sound
     this.soundEffects.stretching = new Audio("./sound-effects/cartoon-rise.wav")
-    this.soundEffects.stretching.currentTime = 0.2
     this.soundEffects.stretching.playbackRate = 0.3
 
     // Walking sound
