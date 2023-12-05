@@ -13,6 +13,7 @@
   -moz-osx-font-smoothing: grayscale;
 
   --animation-duration: 1001ms;
+  --eigengrau: #16161d;
 }
 
 html,
@@ -113,7 +114,7 @@ canvas {
 
     &-description {
       font-size: 1.2rem;
-      color: #16161d;
+      color: var(--eigengrau);
     }
   }
 
@@ -248,16 +249,22 @@ canvas {
   &-wrapper {
     position: fixed;
     inset: 0;
-    background: #16161d;
     z-index: 2;
     display: grid;
-    place-items: center;
+    align-items: start;
+    background: var(--eigengrau);
     transform: translateX(100%);
     transition: transform 0.3s;
 
     &-inner {
+      gap: 0.5rem;
       display: grid;
+      padding-top: 4rem;
       justify-items: center;
+    }
+
+    input {
+      cursor: pointer;
     }
 
     &[aria-hidden="false"] {
@@ -296,4 +303,9 @@ canvas {
   white-space: nowrap;
   clip: rect(0 0 0 0);
   clip-path: inset(50%);
+}
+
+// Utility
+.d-none {
+  display: none;
 }

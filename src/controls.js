@@ -25,8 +25,6 @@ class Controls {
     const volume = +value
 
     this.game.setVolume(id, volume)
-
-    console.log(this.game.volume)
   }
 
   addEventListeners = () => {

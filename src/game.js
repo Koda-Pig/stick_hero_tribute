@@ -24,8 +24,6 @@ class Game {
     // Game state
     this.phase = "waiting" // waiting | stretching | turning | walking | transitioning | falling
     this.lastTimestamp // The timestamp of the previous animation cycle
-    this.heroX // Changes when moving forward
-    this.heroY // Only changes when falling
     this.sceneOffset // Moves the whole game
     this.platforms = []
     this.sticks = []
@@ -40,14 +38,13 @@ class Game {
     }
 
     // Constants
-    this.heroDistanceFromEdge = 10 // While waiting
-    this.paddingX = 100 // Waiting position of hero
+    this.paddingX = 100 // Waiting position of player
     this.perfectAreaSize = 16
     this.stretchingSpeed = 4 // Milliseconds it takes to draw a pixel
     this.turningSpeed = 4 // Milliseconds it takes to turn a degree
     this.walkingSpeed = 4
     this.transitioningSpeed = 2
-    this.fallingSpeed = 0.5 // The background moves slower than the hero
+    this.fallingSpeed = 0.5 // The background moves slower than the player
     this.fallingAcceleration = 0.007
     this.backgroundSpeedMultiplier = 0.2
     this.hill1BaseHeight = 100
@@ -56,8 +53,14 @@ class Game {
     this.hill2BaseHeight = 70
     this.hill2Amplitude = 20
     this.hill2Stretch = 0.5
-    this.heroWidth = 17
-    this.heroHeight = 30
+
+    this.player = {
+      x: 0,
+      y: 0, // Only changes when falling
+      width: 16,
+      height: 30,
+      distanceFromEdge: 10, // While waiting
+    }
   }
 
   // Initialize game
@@ -97,7 +100,7 @@ class Game {
 
     // Draw scene
     this.drawPlatforms()
-    this.drawHero()
+    this.drawPlayer()
     this.drawSticks()
 
     // Restore the previous drawing state
@@ -216,24 +219,24 @@ class Game {
     this.ctx.fill()
   }
 
-  // Draw the hero
-  drawHero = () => {
+  // Draw the player
+  drawPlayer = () => {
     this.ctx.save()
     this.ctx.fillStyle = "black"
     this.ctx.translate(
-      this.heroX - this.heroWidth / 2,
-      this.heroY +
+      this.player.x - this.player.width / 2,
+      this.player.y +
         this.canvas.height -
         this.platformHeight -
-        this.heroHeight / 2
+        this.player.height / 2
     )
 
     // Body
     this.drawRoundedRect(
-      -this.heroWidth / 2,
-      -this.heroHeight / 2,
-      this.heroWidth,
-      this.heroHeight - 4,
+      -this.player.width / 2,
+      -this.player.height / 2,
+      this.player.width,
+      this.player.height - 4,
       5
     )
 
@@ -254,7 +257,12 @@ class Game {
 
     // Band
     this.ctx.fillStyle = "red"
-    this.ctx.fillRect(-this.heroWidth / 2 - 1, -12, this.heroWidth + 2, 4.5)
+    this.ctx.fillRect(
+      -this.player.width / 2 - 1,
+      -12,
+      this.player.width + 2,
+      4.5
+    )
     this.ctx.beginPath()
     this.ctx.moveTo(-9, -14.5)
     this.ctx.lineTo(-17, -18.5)
@@ -288,6 +296,19 @@ class Game {
       // Restore transformations
       this.ctx.restore()
     })
+  }
+
+  // Draw sprite
+  /* img: image object
+   * sX: x coordinate of the top left corner of the source image
+   * sY: y coordinate of the top left corner of the source image
+   * sW: width of the source image
+   * sH: height of the source image
+   * dX: x coordinate in the canvas at which to place the top left corner of the source image
+   * dY: y coordinate in the canvas at which to place the top left corner of the source image
+   */
+  drawSprite = (img, sX, sY, sW, sH, dX, dY, dW, dH) => {
+    this.ctx.drawImage(img, sX, sY, sW, sH, dX, dY, dW, dH)
   }
 
   // Get the y coordinate of a hill
@@ -373,25 +394,25 @@ class Game {
         break
       }
       case "walking": {
-        this.heroX += timePassed / this.walkingSpeed
+        this.player.x += timePassed / this.walkingSpeed
 
         // Play walking sound
         this.soundEffects.walking.play()
 
         const [nextPlatform] = this.thePlatformTheStickHits()
         if (nextPlatform) {
-          // If hero will reach another platform then limit it's position at it's edge
-          const maxHeroX =
-            nextPlatform.x + nextPlatform.w - this.heroDistanceFromEdge
-          if (this.heroX > maxHeroX) {
-            this.heroX = maxHeroX
+          // If player will reach another platform then limit it's position at it's edge
+          const maxPlayerX =
+            nextPlatform.x + nextPlatform.w - this.player.distanceFromEdge
+          if (this.player.x > maxPlayerX) {
+            this.player.x = maxPlayerX
             this.phase = "transitioning"
           }
         } else {
-          // If hero won't reach another platform then limit it's position at the end of the pole
-          const maxHeroX = lastStick.x + lastStick.length + this.heroWidth
-          if (this.heroX > maxHeroX) {
-            this.heroX = maxHeroX
+          // If player won't reach another platform then limit it's position at the end of the pole
+          const maxPlayerX = lastStick.x + lastStick.length + this.player.width
+          if (this.player.x > maxPlayerX) {
+            this.player.x = maxPlayerX
             this.phase = "falling"
           }
         }
@@ -423,17 +444,17 @@ class Game {
         this.soundEffects.falling.play()
 
         this.fallingSpeed += this.fallingAcceleration * timePassed
-        this.heroY += this.fallingSpeed * timePassed
+        this.player.y += this.fallingSpeed * timePassed
 
         if (lastStick.rotation < 180) {
           lastStick.rotation += this.turningSpeed * timePassed * 0.12
         }
 
-        const maxHeroY =
-          this.canvas.height - this.platformHeight + this.heroHeight + 10
+        const maxPlayerY =
+          this.canvas.height - this.platformHeight + this.player.height + 10
 
-        // Hero falls off screen
-        if (this.heroY > maxHeroY) {
+        // Player falls off screen
+        if (this.player.y > maxPlayerY) {
           this.restartButton.classList.remove("hide")
           this.gameOver = true
           this.handleHighScore()
@@ -565,10 +586,10 @@ class Game {
     // Generate trees
     for (let i = 0; i < 20; i++) this.generateTree()
 
-    // Initialize hero position
-    this.heroX =
-      this.platforms[0].x + this.platforms[0].w - this.heroDistanceFromEdge
-    this.heroY = 0
+    // Initialize player position
+    this.player.x =
+      this.platforms[0].x + this.platforms[0].w - this.player.distanceFromEdge
+    this.player.y = 0
 
     this.draw()
   }
@@ -632,7 +653,6 @@ class Game {
       this.soundtrack.forEach(track => {
         track.volume = this.volume.music
       })
-      console.log("change")
     }
     if (id === "effects-volume") {
       this.volume.soundEffects = volume
