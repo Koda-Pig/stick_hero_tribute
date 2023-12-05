@@ -309,3 +309,7 @@ canvas {
 .d-none {
   display: none;
 }
+
+.hide {
+  pointer-events: none;
+}

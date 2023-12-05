@@ -69,6 +69,8 @@ class Game {
       frameX: 0,
       frameY: 0,
       maxFrame: 7, // 8 total frames, 0 indexed
+      drawPlayerCount: 0,
+      frameLimit: 1,
       sprite: new Image(),
     }
     this.player.sprite.src = "./images/sprites/monster.png"
@@ -265,11 +267,23 @@ class Game {
       this.player.height
     )
 
-    // Animate sprite
-    if (this.player.frameX < this.player.maxFrame) this.player.frameX++
-    else this.player.frameX = 0
+    this.animateSprite()
 
     this.ctx.restore()
+  }
+
+  // Animate sprite
+  animateSprite = () => {
+    // Limit the animation to every second frame
+    if (this.player.drawPlayerCount % this.player.frameLimit === 0) {
+      if (this.player.frameX < this.player.maxFrame) {
+        this.player.frameX++
+      } else {
+        this.player.frameX = 0
+        this.player.drawPlayerCount = 0
+      }
+    }
+    this.player.drawPlayerCount++
   }
 
   // Draw sprite
@@ -350,9 +364,11 @@ class Game {
     switch (this.phase) {
       case "waiting":
         this.player.frameY = 0
-        return // Stop the loop
+        this.player.frameLimit = 4
+        break
       case "stretching": {
         this.player.frameY = 0
+        this.player.frameLimit = 4
         lastStick.length += timePassed / this.stretchingSpeed
         this.soundEffects.stretching.play()
 
@@ -365,6 +381,7 @@ class Game {
       }
       case "turning": {
         this.player.frameY = 0
+        this.player.frameLimit = 4
         this.soundEffects.stretching.pause()
         this.soundEffects.stretching.currentTime = 0.2
 
@@ -399,6 +416,7 @@ class Game {
       }
       case "walking": {
         this.player.frameY = 1
+        this.player.frameLimit = 1
 
         this.player.x += timePassed / this.walkingSpeed
 
@@ -426,6 +444,7 @@ class Game {
         break
       }
       case "transitioning": {
+        this.player.frameLimit = 4
         this.soundEffects.walking.pause()
         this.soundEffects.walking.currentTime = 0
 
@@ -447,6 +466,7 @@ class Game {
         break
       }
       case "falling": {
+        this.player.frameLimit = 2
         // need to create another sprite for falling
         this.player.frameY = 0
 
@@ -472,7 +492,7 @@ class Game {
         break
       }
       default:
-        throw Error("Wrong this.phase")
+        throw Error("Wrong", this.phase)
     }
 
     this.draw()
@@ -686,7 +706,7 @@ class Game {
       this.lastTimestamp = undefined
       this.introductionElement.classList.add("hide")
       this.phase = "stretching"
-      window.requestAnimationFrame(this.animate)
+      // window.requestAnimationFrame(this.animate)
     }
   }
 
@@ -707,13 +727,11 @@ class Game {
 
   // handle restart button click
   handleRestart = (e, type) => {
-    if (type === "click") {
-      this.resetGame()
-      this.restartButton.classList.add("hide")
-    } else if (type === "keydown" && e.key === " ") {
+    if (type === "click" || (type === "keydown" && e.key === " ")) {
       e.preventDefault()
       this.resetGame()
-      return
+      this.restartButton.classList.add("hide")
+      window.requestAnimationFrame(this.animate)
     }
   }
 
