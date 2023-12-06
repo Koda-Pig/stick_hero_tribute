@@ -86,12 +86,22 @@ class Game {
       y: 0,
       width: 154, // will be randomized
       height: 535,
-      sprite: new Image(),
+      spriteUrls: [
+        "./images/sprites/pillar-1.png",
+        "./images/sprites/pillar-2.png",
+        "./images/sprites/pillar-3.png",
+        "./images/sprites/pillar-4.png",
+        "./images/sprites/pillar-5.png",
+        "./images/sprites/pillar-6.png",
+      ],
+      sprites: [],
     }
-    this.platform.sprite.src = "./images/sprites/pillar-1.png"
-    this.platform.sprite.onload = () => {
-      this.platformsLoaded = true
-    }
+
+    this.platform.spriteUrls.forEach((url, index) => {
+      this.platform.sprites[index] = new Image()
+      this.platform.sprites[index].src = url
+      this.platform.sprites[index].onload = () => (this.platformsLoaded = true)
+    })
   }
 
   // Initialize game
@@ -214,9 +224,10 @@ class Game {
 
   // Draw all platforms
   drawPlatforms = () => {
-    this.platforms.forEach(({ x, w }) => {
+    this.platforms.forEach(({ x, w, sprite }) => {
+      // draw sprite
       this.drawSprite(
-        this.platform.sprite,
+        sprite,
         0,
         0,
         this.platform.width,
@@ -574,7 +585,13 @@ class Game {
       this.minimumWidth +
       Math.floor(Math.random() * (this.maximumWidth - this.minimumWidth))
 
-    this.platforms.push({ x, w })
+    // Randomly select a sprite for the new platform
+    const sprite =
+      this.platform.sprites[
+        Math.floor(Math.random() * this.platform.sprites.length)
+      ]
+
+    this.platforms.push({ x, w, sprite })
   }
 
   // Generates a new tree
@@ -622,7 +639,7 @@ class Game {
     this.highscoreElement.innerText = this.highscore
 
     // The first platform is always the same
-    this.platforms = [{ x: 50, w: 50 }]
+    this.platforms = [{ x: 50, w: 50, sprite: this.platform.sprites[0] }]
 
     // Keep generating platforms until the screen is full
     while (this.totalPlatformWidth() < window.innerWidth) {
