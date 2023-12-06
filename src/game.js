@@ -40,7 +40,7 @@ class Game {
 
     // Constants
     this.paddingX = 100 // Waiting position of player
-    this.perfectAreaSize = 16
+    this.perfectAreaSize = 10
     this.stretchingSpeed = 4 // Milliseconds it takes to draw a pixel
     this.turningSpeed = 4 // Milliseconds it takes to turn a degree
     this.walkingSpeed = 4
@@ -78,6 +78,19 @@ class Game {
     // but do not draw it on the canvas yet
     this.player.sprite.onload = () => {
       this.spritesLoaded = true
+    }
+
+    // Platforms
+    this.platform = {
+      x: 0,
+      y: 0,
+      width: 154, // will be randomized
+      height: 535,
+      sprite: new Image(),
+    }
+    this.platform.sprite.src = "./images/sprites/pillar-1.png"
+    this.platform.sprite.onload = () => {
+      this.platformsLoaded = true
     }
   }
 
@@ -202,11 +215,20 @@ class Game {
   // Draw all platforms
   drawPlatforms = () => {
     this.platforms.forEach(({ x, w }) => {
-      this.ctx.fillStyle = "black"
-      this.ctx.fillRect(x, this.canvas.height / 2, w, this.platformHeight)
+      this.drawSprite(
+        this.platform.sprite,
+        0,
+        0,
+        this.platform.width,
+        this.platform.height,
+        x,
+        this.canvas.height / 2,
+        w,
+        this.platform.height
+      )
 
       // Draw perfect area
-      this.ctx.fillStyle = "red"
+      this.ctx.fillStyle = "rgba(255, 0, 0, 0.5)"
       this.ctx.fillRect(
         x + w / 2 - this.perfectAreaSize / 2,
         this.canvas.height - this.platformHeight,
@@ -244,7 +266,6 @@ class Game {
 
   // Draw the player
   drawPlayer = () => {
-    if (!this.spritesLoaded) return
     this.ctx.save()
     this.ctx.translate(
       this.player.x - this.player.width / 2,
@@ -346,6 +367,8 @@ class Game {
 
   // The main animation loop
   animate = timestamp => {
+    if (!this.spritesLoaded || !this.platformsLoaded) return
+
     // Either the width of the canvas or half of it's height
     const maxLength =
       this.canvas.width > this.canvas.height / 2

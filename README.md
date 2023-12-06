@@ -15,10 +15,13 @@ If you get an error when you try open the project in the browser, do a force ref
 ## TODO:
 
 - [x] Add a high score system that keeps high score in browser storage
-- [ ] Add walking animation to hero
+- [x] Add walking animation to hero
 - [x] Make hero fall more natural - increase velocity
 - [x] Add sound effects
-- [ ] Add controls for volume (soundtrack and effects).
+- [x] Add controls for volume (soundtrack and effects).
+- [ ] Add controls for sountrack - skip track, previous track
+- [ ] Sticks swing further than 90 deg - fix.
+- [ ] Improve backgrounds
 
 ## SOUNDTRACK:
 
