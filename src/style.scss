@@ -14,6 +14,8 @@
 
   --animation-duration: 1001ms;
   --eigengrau: #16161d;
+  --cosmic-latte: #fff8e7;
+  --purp: #646cff;
 }
 
 html,
@@ -45,7 +47,7 @@ p {
   cursor: pointer;
   transition: border-color 0.25s;
   &:hover {
-    border-color: #646cff;
+    border-color: var(--purp);
   }
 
   &:focus,
@@ -56,7 +58,7 @@ p {
 
 a {
   font-weight: 500;
-  color: #646cff;
+  color: var(--purp);
   text-decoration: inherit;
   &:hover {
     color: #535bf2;
@@ -215,13 +217,14 @@ canvas {
     flex-flow: column nowrap;
     padding: 0;
     justify-content: space-around;
+    --trans-duration: 0.4s;
 
     &:focus-visible {
       outline: transparent;
     }
 
     svg {
-      transition: rotate 0.8s, transform 0.8s;
+      transition: rotate var(--trans-duration), transform var(--trans-duration);
     }
 
     path {
@@ -231,7 +234,8 @@ canvas {
       stroke-linecap: round;
       stroke-linejoin: round;
       stroke-dasharray: 60 31 60 300;
-      transition: stroke-dasharray 0.8s, stroke-dashoffset 0.8s;
+      transition: stroke-dasharray var(--trans-duration),
+        stroke-dashoffset var(--trans-duration);
     }
 
     &[aria-expanded="true"] {
@@ -250,9 +254,10 @@ canvas {
     position: fixed;
     inset: 0;
     z-index: 2;
+    justify-items: center;
     display: grid;
     align-items: start;
-    background: var(--eigengrau);
+    background: rgba(#16161d, 0.96);
     transform: translateX(100%);
     transition: transform 0.3s;
 
@@ -261,6 +266,70 @@ canvas {
       display: grid;
       padding-top: 4rem;
       justify-items: center;
+      max-width: 200px;
+    }
+
+    .prev-next-wrapper {
+      display: flex;
+      gap: 0.5rem;
+      width: 100%;
+    }
+
+    .button {
+      background-color: var(--purp);
+      transition-duration: 0.25s;
+      transition-property: border-color, background-color;
+      gap: 1rem;
+      display: flex;
+      justify-content: space-between;
+      max-width: 100%;
+      width: 100%;
+
+      i {
+        display: block;
+        width: 20px;
+        height: 20px;
+        background: center / cover no-repeat url("");
+        transition: background-position 0.2s;
+      }
+
+      &:hover,
+      &:focus {
+        background-color: var(--eigengrau);
+        color: var(--cosmic-latte);
+      }
+
+      &.play-pause {
+        min-width: 11rem;
+
+        i {
+          background-repeat: no-repeat;
+          background-image: url("/images/icons/play-pause.svg");
+          background-size: 190%;
+          background-position: right;
+        }
+
+        &[aria-label="play music"] i {
+          background-position: left;
+        }
+      }
+
+      &.next,
+      &.prev {
+        place-content: center;
+      }
+
+      &.next {
+        i {
+          background-image: url("/images/icons/next.svg");
+        }
+      }
+
+      &.prev {
+        i {
+          background-image: url("/images/icons/prev.svg");
+        }
+      }
     }
 
     input {

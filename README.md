@@ -19,7 +19,8 @@ If you get an error when you try open the project in the browser, do a force ref
 - [x] Make hero fall more natural - increase velocity
 - [x] Add sound effects
 - [x] Add controls for volume (soundtrack and effects).
-- [ ] Add controls for sountrack - skip track, previous track
+- [x] Add controls for sountrack - skip track, previous track
+- [ ] Add punch animation to hero before stick falls
 - [ ] Sticks swing further than 90 deg - fix.
 - [ ] Improve backgrounds
 

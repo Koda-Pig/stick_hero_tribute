@@ -33,8 +33,8 @@ class Game {
     this.gameOver = true
     this.gameInit = false
     this.volume = {
-      music: 0.5,
-      soundEffects: 0.5,
+      music: 0.3,
+      soundEffects: 0.3,
     }
     this.spritesLoaded = false
 
@@ -654,7 +654,7 @@ class Game {
   resetGame = () => {
     // Play track if game is first time initialized
     if (this.gameInit) {
-      this.playTrack(0)
+      this.playPauseSoundtrack(0)
       this.restartButton.innerText = "RESTART"
       this.canvas.classList.add("active")
     }
@@ -767,12 +767,39 @@ class Game {
     }
   }
 
-  // Play soundtrack
-  playTrack(trackindex) {
+  // Control soundtrack
+  playPauseSoundtrack(trackindex, action = "toggle") {
     if (trackindex >= this.soundtrack.length) trackindex = 0
-    this.soundtrack[trackindex].play()
+    if (trackindex < 0) trackindex = this.soundtrack.length - 1
+
+    const currentTrack = this.soundtrack[trackindex]
+
+    // If 'toggle' is selected, play or pause the track depending on its current state
+    if (action === "toggle") {
+      if (currentTrack.paused) currentTrack.play()
+      else currentTrack.pause()
+    }
+
     this.currentTrack = trackindex
-    this.soundtrack[trackindex].onended = () => this.playTrack(trackindex + 1)
+    currentTrack.onended = () =>
+      this.playPauseSoundtrack(trackindex + 1, "toggle")
+  }
+
+  prevNextSoundtrack(action) {
+    const currentTrack = this.soundtrack[this.currentTrack]
+
+    // Pause and reset the current track
+    if (!currentTrack.paused) {
+      currentTrack.pause()
+      currentTrack.currentTime = 0
+    }
+
+    // Calculate the new track index
+    const newTrackIndex =
+      action === "next" ? this.currentTrack + 1 : this.currentTrack - 1
+
+    // Play the new track
+    this.playPauseSoundtrack(newTrackIndex, "toggle")
   }
 
   // handle mouse down/ touch start
