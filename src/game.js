@@ -84,23 +84,46 @@ class Game {
     this.platform = {
       x: 0,
       y: 0,
-      width: 154, // will be randomized
       height: 535,
-      spriteUrls: [
-        "./images/sprites/pillar-1.png",
-        "./images/sprites/pillar-2.png",
-        "./images/sprites/pillar-3.png",
-        "./images/sprites/pillar-4.png",
-        "./images/sprites/pillar-5.png",
-        "./images/sprites/pillar-6.png",
+      pillars: [
+        {
+          sprite: new Image(),
+          url: "./images/sprites/pillar-1.png",
+          width: 99,
+        },
+        {
+          sprite: new Image(),
+          url: "./images/sprites/pillar-2.png",
+          width: 123,
+        },
+        {
+          sprite: new Image(),
+          url: "./images/sprites/pillar-3.png",
+          width: 154,
+        },
+        {
+          sprite: new Image(),
+          url: "./images/sprites/pillar-4.png",
+          width: 162,
+        },
+        {
+          sprite: new Image(),
+          url: "./images/sprites/pillar-5.png",
+          width: 165,
+        },
+        {
+          sprite: new Image(),
+          url: "./images/sprites/pillar-6.png",
+          width: 188,
+        },
       ],
-      sprites: [],
     }
 
-    this.platform.spriteUrls.forEach((url, index) => {
-      this.platform.sprites[index] = new Image()
-      this.platform.sprites[index].src = url
-      this.platform.sprites[index].onload = () => (this.platformsLoaded = true)
+    this.platform.pillars.forEach(pillar => {
+      pillar.sprite.src = pillar.url
+      pillar.sprite.onload = () => {
+        this.platformsLoaded = true
+      }
     })
   }
 
@@ -224,18 +247,18 @@ class Game {
 
   // Draw all platforms
   drawPlatforms = () => {
-    this.platforms.forEach(({ x, w, sprite }) => {
+    this.platforms.forEach(({ x, w, pillar }) => {
       // draw sprite
       this.drawSprite(
-        sprite,
+        pillar.sprite,
         0,
         0,
-        this.platform.width,
+        pillar.width,
         this.platform.height,
         x,
         this.canvas.height / 2,
         w,
-        this.platform.height
+        this.canvas.height / 2
       )
 
       // Draw perfect area
@@ -327,6 +350,8 @@ class Game {
      * sH: height of the source image
      * dX: x coordinate in the canvas at which to place the top left corner of the source image
      * dY: y coordinate in the canvas at which to place the top left corner of the source image
+     * dW: width of the source image to use (stretch or reduce the image)
+     * dH: height of the source image to use (stretch or reduce the image)
      */
     this.ctx.drawImage(img, sX, sY, sW, sH, dX, dY, dW, dH)
   }
@@ -585,13 +610,24 @@ class Game {
       this.minimumWidth +
       Math.floor(Math.random() * (this.maximumWidth - this.minimumWidth))
 
-    // Randomly select a sprite for the new platform
-    const sprite =
-      this.platform.sprites[
-        Math.floor(Math.random() * this.platform.sprites.length)
-      ]
+    // Select a pillar based on the w value. The pillars get progressively wider,
+    // So match the pillar based on the width of the platform:
+    let pillar
+    if (w < 33) {
+      pillar = this.platform.pillars[0]
+    } else if (w < 46) {
+      pillar = this.platform.pillars[1]
+    } else if (w < 59) {
+      pillar = this.platform.pillars[2]
+    } else if (w < 72) {
+      pillar = this.platform.pillars[3]
+    } else if (w < 85) {
+      pillar = this.platform.pillars[4]
+    } else {
+      pillar = this.platform.pillars[5]
+    }
 
-    this.platforms.push({ x, w, sprite })
+    this.platforms.push({ x, w, pillar })
   }
 
   // Generates a new tree
@@ -639,7 +675,7 @@ class Game {
     this.highscoreElement.innerText = this.highscore
 
     // The first platform is always the same
-    this.platforms = [{ x: 50, w: 50, sprite: this.platform.sprites[0] }]
+    this.platforms = [{ x: 50, w: 50, pillar: this.platform.pillars[0] }]
 
     // Keep generating platforms until the screen is full
     while (this.totalPlatformWidth() < window.innerWidth) {
@@ -746,7 +782,6 @@ class Game {
       this.lastTimestamp = undefined
       this.introductionElement.classList.add("hide")
       this.phase = "stretching"
-      // window.requestAnimationFrame(this.animate)
     }
   }
 
