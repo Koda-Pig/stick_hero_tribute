@@ -128,9 +128,16 @@ canvas {
 }
 
 #restart {
-  top: 35%;
+  top: auto;
+  bottom: 35%;
+  font-size: 2rem;
   position: absolute;
   transition: opacity 0.15s;
+
+  @media screen and (min-width: 768px) {
+    top: 35%;
+    bottom: auto;
+  }
 
   &.hide {
     opacity: 0;
@@ -338,11 +345,6 @@ canvas {
 
     &[aria-hidden="false"] {
       transform: translateX(0);
-    }
-  }
-
-  &-item {
-    input {
     }
   }
 }
