@@ -65,19 +65,6 @@ a {
   }
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
-}
-
 canvas {
   pointer-events: none;
   background: url("./images/background.png") bottom / cover no-repeat;
