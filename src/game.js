@@ -535,8 +535,10 @@ class Game {
         this.fallingSpeed += this.fallingAcceleration * timePassed
         this.player.y += this.fallingSpeed * timePassed
 
+        // Stick falling animation
+        // Ensure stick doesn't fall further than 90 degrees
         if (lastStick.rotation < 180) {
-          lastStick.rotation += this.turningSpeed * timePassed * 0.12
+          lastStick.rotation += this.turningSpeed * timePassed * 0.0905
         }
 
         const maxPlayerY =
