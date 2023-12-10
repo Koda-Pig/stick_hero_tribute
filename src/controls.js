@@ -28,26 +28,41 @@ class Controls {
     this.game.setVolume(id, volume)
   }
 
-  handlePlayPause = () => {
+  handlePlayPause = (e, action = "change") => {
+    if (this.game.gameOver) return
+
     const paused = this.playPauseBtn.getAttribute("aria-label") === "play music"
     if (paused) {
       // Play the song
       this.playPauseBtn.setAttribute("aria-label", "pause music")
       this.playPauseSpan.innerText = "pause music"
+      this.game.playerSettings.soundtrackState = "playing"
     } else {
       // Pause the song
       this.playPauseBtn.setAttribute("aria-label", "play music")
       this.playPauseSpan.innerText = "play music"
+      this.game.playerSettings.soundtrackState = "paused"
     }
-    this.game.playPauseSoundtrack(this.game.currentTrack, "toggle")
+    if (action === "change") {
+      this.game.playPauseSoundtrack(this.game.currentTrack, "toggle")
+    }
   }
 
   handlePrevNext = action => {
+    if (this.game.gameOver || (action !== "prev" && action !== "next")) return
+
     if (action === "prev") {
       this.game.prevNextSoundtrack("previous")
     }
     if (action === "next") {
       this.game.prevNextSoundtrack("next")
+    }
+
+    if (this.game.soundtrackIsPlaying()) {
+      // song always starts playing when next or prev
+      this.playPauseBtn.setAttribute("aria-label", "pause music")
+      this.playPauseSpan.innerText = "pause music"
+      this.game.playerSettings.soundtrackState = "playing"
     }
   }
 
@@ -56,7 +71,9 @@ class Controls {
     this.inputs.forEach(input => {
       input.addEventListener("change", this.handleInput)
     })
-    this.playPauseBtn.addEventListener("click", this.handlePlayPause)
+    this.playPauseBtn.addEventListener("click", e => {
+      this.handlePlayPause(e, "change")
+    })
     this.prevBtn.addEventListener("click", () => this.handlePrevNext("prev"))
     this.nextBtn.addEventListener("click", () => this.handlePrevNext("next"))
   }

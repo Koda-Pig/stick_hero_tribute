@@ -37,6 +37,9 @@ class Game {
       soundEffects: 0.3,
     }
     this.spritesLoaded = false
+    this.playerSettings = {
+      soundtrackState: "playing",
+    }
 
     // Constants
     this.paddingX = 100 // Waiting position of player
@@ -656,9 +659,18 @@ class Game {
   resetGame = () => {
     // Play track if game is first time initialized
     if (this.gameInit) {
-      this.playPauseSoundtrack(0)
       this.restartButton.innerText = "RESTART"
       this.canvas.classList.add("active")
+
+      // Only play soundtrack on restart if user has not paused it
+      // Never pause the soundtrack on restart
+      // const soundtrackPlaying = this.soundtrack.some(track => !track.paused)
+      if (
+        !this.soundtrackIsPlaying() &&
+        this.playerSettings.soundtrackState !== "paused"
+      ) {
+        this.playPauseSoundtrack(0)
+      }
     }
 
     // Reset game state
@@ -802,6 +814,10 @@ class Game {
 
     // Play the new track
     this.playPauseSoundtrack(newTrackIndex, "toggle")
+  }
+
+  soundtrackIsPlaying = () => {
+    return this.soundtrack.some(track => !track.paused)
   }
 
   // handle mouse down/ touch start
