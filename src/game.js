@@ -865,6 +865,12 @@ class Game {
     this.soundEffects.perfect.play()
   }
 
+  clearHighScore = () => {
+    this.highscore = 0
+    localStorage.setItem("stick-hero-tribute-highscore", this.highscore)
+    this.highscoreElement.innerText = this.highscore
+  }
+
   // Add event listeners
   addEventListeners = () => {
     this.canvas.addEventListener("mousedown", e => this.handleClick(e))

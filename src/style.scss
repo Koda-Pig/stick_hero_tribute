@@ -309,6 +309,12 @@ canvas {
         }
       }
 
+      &.highscore-btn {
+        i {
+          background-image: url("/images/icons/trophy.svg");
+        }
+      }
+
       &.next,
       &.prev {
         place-content: center;

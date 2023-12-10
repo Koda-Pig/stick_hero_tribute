@@ -20,9 +20,10 @@
         />
       </svg>
     </button>
-    <aside class="controls-wrapper" id="controls-wrapper" aria-hidden="true">
+    <aside class="controls-wrapper" id="controls-wrapper" aria-hidden="false">
       <div class="controls-wrapper-inner">
-        <h3>Settings</h3>
+        <h2>Settings</h2>
+        <h3>Sound</h3>
         <button
           aria-label="pause music"
           id="play-pause-btn"
@@ -78,6 +79,16 @@
             value="0.3"
           />
         </div>
+        <h3>Highscore</h3>
+        <button
+          aria-label="clear highscore"
+          id="highscore-btn"
+          class="button highscore-btn"
+          type="button"
+        >
+          <span>clear highscore</span>
+          <i aria-hidden="true"> </i>
+        </button>
       </div>
     </aside>
     <main class="container">
