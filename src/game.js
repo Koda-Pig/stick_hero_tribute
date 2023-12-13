@@ -139,7 +139,7 @@ class Game {
       image: this.bgImg,
       x: 0,
       y: 0,
-      width: 1080,
+      width: 1920,
       height: 1080,
       speed: 2,
     }
@@ -198,46 +198,25 @@ class Game {
 
     // Calculate the scaled width and height
     const scaledWidth = this.background.width * scale
-    const scaledHeight = this.canvasHeight // Use the height of the canvas
+    const scaledHeight = this.canvas.height // Use the height of the canvas
 
     // Update the x position of the background for parallax effect
-    this.background.x = -(this.sceneOffset * this.background.speed)
+    this.background.x =
+      -(this.sceneOffset * this.background.speed) % scaledWidth
 
-    // Draw the first image
-    this.ctx.drawImage(
-      this.background.image,
-      0,
-      0, // Source X and Y
-      this.background.width,
-      this.background.height, // Source Width and Height
-      this.background.x,
-      0, // Destination X and Y
-      this.canvasWidth,
-      this.canvasHeight // Destination Width and Height
-    )
-
-    // Draw the second image immediately after the first
-    this.ctx.drawImage(
-      this.background.image,
-      0,
-      0, // Source X and Y
-      this.background.width,
-      this.background.height, // Source Width and Height
-      this.background.x + this.background.width, // Positioning the second image
-      0, // Destination Y
-      scaledWidth,
-      scaledHeight // Destination Width and Height
-    )
-
-    while (this.i < 4) {
-      console.log(this.canvasWidth, window.innerWidth, scaledWidth)
-      console.log(this.canvasHeight, window.innerHeight, scaledHeight)
-      this.i++
-    }
-
-    // If the first image has moved entirely off-screen, reset its position
-    if (this.background.x >= scaledWidth) {
-      this.background.x += scaledWidth
+    // Draw the images in a loop to cover the entire canvas width
+    for (let x = this.background.x; x < this.canvas.width; x += scaledWidth) {
+      this.ctx.drawImage(
+        this.background.image,
+        0,
+        0, // Source X and Y
+        this.background.width,
+        this.background.height, // Source Width and Height
+        x,
+        0, // Destination X and Y
+        scaledWidth,
+        scaledHeight // Destination Width and Height
+      )
     }
   }
 
