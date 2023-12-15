@@ -103,10 +103,12 @@ canvas {
     display: block;
     width: 192px;
     height: 192px;
-    background-image: url("./images/monster-loading.png");
-    background-repeat: no-repeat;
-    background-position: 0;
-    background-size: cover;
+    // background-image: url("./images/monster-loading.png");
+    // background-repeat: no-repeat;
+    // background-position: 0;
+    // background-size: cover;
+    object-fit: cover;
+    object-position: 0;
     animation: loading-animation 4s steps(31) infinite;
   }
 
@@ -418,18 +420,9 @@ canvas {
   }
 }
 
-// 12.5   -
-// 25
-// 37.5
-// 50
-// 62.5
-// 75
-// 87.5
-// 100
-
 @keyframes loading-animation {
   100% {
-    background-position: 100% 0;
+    object-position: 100% 0;
   }
 }
 

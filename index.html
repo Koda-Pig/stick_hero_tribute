@@ -13,7 +13,14 @@
   <body>
     <div class="loading-screen" id="loading-screen">
       <div class="loading-screen-inner">
-        <div class="loading-screen-icon" aria-hidden="true"></div>
+        <img
+          class="loading-screen-icon"
+          aria-hidden="true"
+          src="/images/monster-loading.png"
+          width="192px"
+          height="192px"
+          loading="eager"
+        />
         <div
           class="loading-screen-bar"
           role="progressbar"
@@ -32,7 +39,7 @@
       alt="space background"
       class="visually-hidden"
       id="bg-img"
-      loading="eager"
+      loading="lazy"
     />
     <button
       role="button"
