@@ -896,7 +896,7 @@ class Game {
           sound.volume = this.volume.soundEffects
         })
 
-        // this.loadingScreenWrapper.classList.add("hide")
+        this.loadingScreenWrapper.classList.add("hide")
         this.gameInit = true
       }
     }, 40)
