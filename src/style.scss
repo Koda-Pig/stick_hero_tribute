@@ -25,28 +25,29 @@ body {
 }
 
 body {
+  margin: 0;
   display: grid;
   place-items: center;
-  margin: 0;
   overflow: hidden;
 }
 
 p {
-  pointer-events: none;
   margin: 0;
+  pointer-events: none;
 }
 
 .button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
+  cursor: pointer;
+  color: var(--cosmic-latte);
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
+  padding: 0.6em 1.2em;
+  border: 1px solid transparent;
+  border-radius: 8px;
   background-color: #1a1a1a;
-  color: var(--cosmic-latte);
-  cursor: pointer;
   transition: border-color 0.25s;
+
   &:hover {
     border-color: var(--purp);
   }
@@ -58,9 +59,10 @@ p {
 }
 
 a {
-  font-weight: 500;
   color: var(--purp);
+  font-weight: 500;
   text-decoration: inherit;
+
   &:hover {
     color: #535bf2;
   }
@@ -82,11 +84,10 @@ canvas {
 .loading-screen {
   position: fixed;
   inset: 0;
-  // pointer-events: none;
-  background: var(--eigengrau);
   z-index: 3;
   display: grid;
   place-content: center;
+  background: var(--eigengrau);
 
   &.hide {
     opacity: 0;
@@ -107,10 +108,6 @@ canvas {
     display: block;
     width: 192px;
     height: 192px;
-    // background-image: url("./images/monster-loading.png");
-    // background-repeat: no-repeat;
-    // background-position: 0;
-    // background-size: cover;
     object-fit: cover;
     object-position: 0;
     animation: loading-animation 4s steps(31) infinite;
@@ -210,7 +207,7 @@ canvas {
     position: absolute;
     border-radius: 50%;
     transform: translateY(-50%);
-    background: radial-gradient(transparent 50%, rgba(#659f1c, 0.3) 75%);
+    background: radial-gradient(transparent 50%, rgba(#301c41, 0.3) 75%);
   }
 
   &.highlight {

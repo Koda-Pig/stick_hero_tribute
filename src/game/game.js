@@ -97,51 +97,15 @@ class Game {
       this.spritesLoaded = true
     }
 
-    // Platforms
+    // Platform
     this.platform = {
       x: 0,
       y: 0,
       height: 535,
-      pillars: [
-        {
-          sprite: new Image(),
-          url: "./images/sprites/pillar-1.png",
-          width: 99,
-        },
-        {
-          sprite: new Image(),
-          url: "./images/sprites/pillar-2.png",
-          width: 123,
-        },
-        {
-          sprite: new Image(),
-          url: "./images/sprites/pillar-3.png",
-          width: 154,
-        },
-        {
-          sprite: new Image(),
-          url: "./images/sprites/pillar-4.png",
-          width: 162,
-        },
-        {
-          sprite: new Image(),
-          url: "./images/sprites/pillar-5.png",
-          width: 165,
-        },
-        {
-          sprite: new Image(),
-          url: "./images/sprites/pillar-6.png",
-          width: 188,
-        },
-      ],
+      img: new Image(),
     }
 
-    this.platform.pillars.forEach(pillar => {
-      pillar.sprite.src = pillar.url
-      pillar.sprite.onload = () => {
-        this.platformsLoaded = true
-      }
-    })
+    this.platform.img.src = "./images/sprites/column.svg"
   }
 
   // Initialize game
@@ -233,14 +197,14 @@ class Game {
       for (let x = this.background.x; x < this.canvas.width; x += scaledWidth) {
         this.ctx.drawImage(
           this.background.images[i].src,
-          0,
-          0, // Source X and Y
-          this.background.width,
-          this.background.height, // Source Width and Height
-          x,
-          0, // Destination X and Y
-          scaledWidth,
-          scaledHeight // Destination Width and Height
+          0, // Source X
+          0, // Source Y
+          this.background.width, // Source Width
+          this.background.height, // Source Height
+          x, // Destination X
+          0, // Destination Y
+          scaledWidth, // Destination Width
+          scaledHeight // Destination Height
         )
       }
     }
@@ -248,28 +212,41 @@ class Game {
 
   // Draw all platforms
   drawPlatforms = () => {
-    this.platforms.forEach(({ x, w, pillar }) => {
-      // draw sprite
+    this.platforms.forEach(({ x, w }) => {
       this.drawSprite(
-        pillar.sprite,
+        this.platform.img,
         0,
         0,
-        pillar.width,
-        this.platform.height,
+        310, // sW: Source width from viewBox
+        this.canvasHeight,
         x,
         this.canvasHeight / 2,
         w,
         this.canvasHeight / 2
       )
 
-      // Draw perfect area
+      // draw perfect area
       this.ctx.fillStyle = "rgba(255, 0, 0, 0.5)"
-      this.ctx.fillRect(
+      this.ctx.beginPath()
+      // Move to top left vertex
+      this.ctx.moveTo(
         x + w / 2 - this.perfectAreaSize / 2,
-        this.canvasHeight - this.platformHeight,
-        this.perfectAreaSize,
-        this.perfectAreaSize
+        this.canvasHeight - this.platformHeight
       )
+      // Line to top right vertex
+      this.ctx.lineTo(
+        x + w / 2 + this.perfectAreaSize / 2,
+        this.canvasHeight - this.platformHeight
+      )
+      // Line to bottom center vertex
+      this.ctx.lineTo(
+        x + w / 2,
+        this.canvasHeight - this.platformHeight + this.perfectAreaSize
+      )
+      // Close the path (optional but recommended)
+      this.ctx.closePath()
+      // Fill the triangle
+      this.ctx.fill()
     })
 
     // Remove platforms that are no longer in the viewport:
@@ -404,8 +381,7 @@ class Game {
 
   // The main animation loop
   animate = timestamp => {
-    if (!this.spritesLoaded || !this.platformsLoaded) return
-
+    if (!this.spritesLoaded) return
     // Either the width of the canvas or half of it's height
     const maxLength =
       this.canvasWidth > this.canvasHeight / 2
@@ -424,11 +400,11 @@ class Game {
     switch (this.phase) {
       case "waiting":
         this.player.frameY = 0
-        this.player.frameLimit = 4
+        this.player.frameLimit = 5
         break
       case "stretching": {
         this.player.frameY = 0
-        this.player.frameLimit = 4
+        this.player.frameLimit = 5
         lastStick.length += timePassed / this.stretchingSpeed
 
         if (this.playerSettings.effectsState === "playing") {
@@ -444,7 +420,7 @@ class Game {
       }
       case "turning": {
         this.player.frameY = 0
-        this.player.frameLimit = 4
+        this.player.frameLimit = 5
         this.soundEffects.stretching.pause()
         this.soundEffects.stretching.currentTime = 0.2
 
@@ -511,7 +487,7 @@ class Game {
         break
       }
       case "transitioning": {
-        this.player.frameLimit = 4
+        this.player.frameLimit = 5
         this.soundEffects.walking.pause()
         this.soundEffects.walking.currentTime = 0
 
@@ -622,24 +598,7 @@ class Game {
       this.minimumWidth +
       Math.floor(Math.random() * (this.maximumWidth - this.minimumWidth))
 
-    // Select a pillar based on the w value. The pillars get progressively wider,
-    // So match the pillar based on the width of the platform:
-    let pillar
-    if (w < 33) {
-      pillar = this.platform.pillars[0]
-    } else if (w < 46) {
-      pillar = this.platform.pillars[1]
-    } else if (w < 59) {
-      pillar = this.platform.pillars[2]
-    } else if (w < 72) {
-      pillar = this.platform.pillars[3]
-    } else if (w < 85) {
-      pillar = this.platform.pillars[4]
-    } else {
-      pillar = this.platform.pillars[5]
-    }
-
-    this.platforms.push({ x, w, pillar })
+    this.platforms.push({ x, w })
   }
 
   // Generates a new tree
@@ -696,7 +655,7 @@ class Game {
     this.highscoreElement.innerText = this.highscore
 
     // The first platform is always the same
-    this.platforms = [{ x: 50, w: 50, pillar: this.platform.pillars[0] }]
+    this.platforms = [{ x: 50, w: 50 }]
 
     // Keep generating platforms until the screen is full
     while (this.totalPlatformWidth() < window.innerWidth) {
