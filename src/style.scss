@@ -68,8 +68,7 @@ a {
 
 canvas {
   pointer-events: none;
-  background: url("./images/background.png") bottom / cover no-repeat;
-
+  background: url("./images/background.webp") bottom / cover no-repeat;
   &.active {
     pointer-events: all;
   }
