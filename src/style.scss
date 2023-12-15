@@ -204,6 +204,8 @@ canvas {
     right: 0;
     border: 0;
     z-index: 3;
+    padding: 0;
+    opacity: 0;
     width: 4rem;
     height: 4rem;
     display: flex;
@@ -211,9 +213,12 @@ canvas {
     position: fixed;
     background: none;
     flex-flow: column nowrap;
-    padding: 0;
     justify-content: space-around;
     --trans-duration: 0.4s;
+
+    &.show {
+      opacity: 1;
+    }
 
     &:focus-visible {
       outline: transparent;
@@ -262,7 +267,8 @@ canvas {
       display: grid;
       padding-top: 4rem;
       justify-items: center;
-      max-width: 200px;
+      max-width: 250px;
+      width: 100%;
     }
 
     .prev-next-wrapper {
@@ -305,8 +311,11 @@ canvas {
           background-position: right;
         }
 
-        &[aria-label="play music"] i {
-          background-position: left;
+        &[aria-label="play music"],
+        &[aria-label="play sound effects"] {
+          i {
+            background-position: left;
+          }
         }
       }
 

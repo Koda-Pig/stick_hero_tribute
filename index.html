@@ -32,16 +32,25 @@
       </svg>
     </button>
     <aside class="controls-wrapper" id="controls-wrapper" aria-hidden="true">
-      <div class="controls-wrapper-inner">
+      <div class="controls-wrapper-inner" tabindex="0">
         <h2>Settings</h2>
         <h3>Sound</h3>
         <button
           aria-label="pause music"
-          id="play-pause-btn"
+          id="music-btn"
           class="button play-pause"
           type="button"
         >
           <span>pause music</span>
+          <i aria-hidden="true"> </i>
+        </button>
+        <button
+          aria-label="pause sound effects"
+          id="effects-btn"
+          class="button play-pause"
+          type="button"
+        >
+          <span>pause sound effects</span>
           <i aria-hidden="true"> </i>
         </button>
         <div class="prev-next-wrapper">

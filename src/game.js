@@ -3,6 +3,7 @@ class Game {
     canvas,
     scoreElement,
     highscoreElement,
+    controlsBtn,
     restartButton,
     introductionElement,
     perfectElement,
@@ -13,6 +14,7 @@ class Game {
     this.canvas = canvas
     this.scoreElement = scoreElement
     this.highscoreElement = highscoreElement
+    this.controlsBtn = controlsBtn
     this.restartButton = restartButton
     this.introductionElement = introductionElement
     this.perfectElement = perfectElement
@@ -42,6 +44,7 @@ class Game {
     this.spritesLoaded = false
     this.playerSettings = {
       soundtrackState: "playing",
+      effectsState: "playing",
     }
 
     // Constants
@@ -451,7 +454,10 @@ class Game {
         this.player.frameY = 0
         this.player.frameLimit = 4
         lastStick.length += timePassed / this.stretchingSpeed
-        this.soundEffects.stretching.play()
+
+        if (this.playerSettings.effectsState === "playing") {
+          this.soundEffects.stretching.play()
+        }
 
         // Prevent the stick from stretching too far
         if (lastStick.length > maxLength) {
@@ -479,7 +485,9 @@ class Game {
 
             if (perfectHit) {
               this.perfectElement.classList.add("highlight")
-              this.soundEffects.perfect.play()
+              if (this.playerSettings.effectsState === "playing") {
+                this.soundEffects.perfect.play()
+              }
 
               setTimeout(() => {
                 this.perfectElement.classList.remove("highlight")
@@ -502,7 +510,9 @@ class Game {
         this.player.x += timePassed / this.walkingSpeed
 
         // Play walking sound
-        this.soundEffects.walking.play()
+        if (this.playerSettings.effectsState === "playing") {
+          this.soundEffects.walking.play()
+        }
 
         const [nextPlatform] = this.thePlatformTheStickHits()
         if (nextPlatform) {
@@ -551,8 +561,10 @@ class Game {
         // need to create another sprite for falling
         this.player.frameY = 0
 
-        this.soundEffects.walking.pause()
-        this.soundEffects.falling.play()
+        if (this.playerSettings.effectsState === "playing") {
+          this.soundEffects.walking.pause()
+          this.soundEffects.falling.play()
+        }
 
         this.fallingSpeed += this.fallingAcceleration * timePassed
         this.player.y += this.fallingSpeed * timePassed
@@ -818,6 +830,11 @@ class Game {
       this.playPauseSoundtrack(trackindex + 1, "toggle")
   }
 
+  playPauseEffects() {
+    console.log(this.playerSettings.effectsState)
+    // If 'toggle' is selected, play or pause the track depending on its current state
+  }
+
   prevNextSoundtrack(action) {
     const currentTrack = this.soundtrack[this.currentTrack]
 
@@ -873,6 +890,7 @@ class Game {
       this.resetGame()
       this.restartButton.classList.add("hide")
       window.requestAnimationFrame(this.animate)
+      this.controlsBtn.classList.add("show")
     }
   }
 
@@ -883,7 +901,10 @@ class Game {
     this.highscore = this.score
     this.highscoreElement.innerText = this.highscore
     this.congratsElement.classList.add("highlight")
-    this.soundEffects.perfect.play()
+    if (this.playerSettings.effectsState === "playing") {
+      this.soundEffects.perfect.currentTime = 0
+      this.soundEffects.perfect.play()
+    }
   }
 
   clearHighScore = () => {

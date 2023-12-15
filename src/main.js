@@ -23,6 +23,7 @@ const game = new Game(
   canvas,
   scoreElem,
   highscoreElem,
+  controlsBtn,
   restartBtn,
   introElem,
   perfElem,
