@@ -223,53 +223,6 @@ class Game {
     }
   }
 
-  // Draw a hill
-  drawHill = (baseHeight, amplitude, stretch, color) => {
-    this.ctx.beginPath()
-    this.ctx.moveTo(0, window.innerHeight)
-    this.ctx.lineTo(0, this.getHillY(0, baseHeight, amplitude, stretch))
-    for (let i = 0; i < window.innerWidth; i++) {
-      this.ctx.lineTo(i, this.getHillY(i, baseHeight, amplitude, stretch))
-    }
-    this.ctx.lineTo(window.innerWidth, window.innerHeight)
-    this.ctx.fillStyle = color
-    this.ctx.fill()
-  }
-
-  // Draw a tree
-  drawTree = (x, color) => {
-    this.ctx.save()
-    this.ctx.translate(
-      (-this.sceneOffset * this.backgroundSpeedMultiplier + x) *
-        this.hill1Stretch,
-      this.getTreeY(x, this.hill1BaseHeight, this.hill1Amplitude)
-    )
-
-    const treeTrunkHeight = 5
-    const treeTrunkWidth = 2
-    const treeCrownHeight = 25
-    const treeCrownWidth = 10
-
-    // Draw trunk
-    this.ctx.fillStyle = "#7D833C"
-    this.ctx.fillRect(
-      -treeTrunkWidth / 2,
-      -treeTrunkHeight,
-      treeTrunkWidth,
-      treeTrunkHeight
-    )
-
-    // Draw crown
-    this.ctx.beginPath()
-    this.ctx.moveTo(-treeCrownWidth / 2, -treeTrunkHeight)
-    this.ctx.lineTo(0, -(treeTrunkHeight + treeCrownHeight))
-    this.ctx.lineTo(treeCrownWidth / 2, -treeTrunkHeight)
-    this.ctx.fillStyle = color
-    this.ctx.fill()
-
-    this.ctx.restore()
-  }
-
   // Draw all platforms
   drawPlatforms = () => {
     this.platforms.forEach(({ x, w, pillar }) => {
