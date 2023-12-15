@@ -9,7 +9,7 @@ class Game {
     perfectElement,
     congratsElement,
     scoreContainer,
-    bgImg,
+    bgImgs,
     loadingScreenWrapper
   ) {
     this.canvas = canvas
@@ -21,7 +21,7 @@ class Game {
     this.perfectElement = perfectElement
     this.congratsElement = congratsElement
     this.scoreContainer = scoreContainer
-    this.bgImg = bgImg
+    this.bgImages = bgImgs
     this.loadingScreenWrapper = loadingScreenWrapper
     this.progressBar = this.loadingScreenWrapper.querySelector(
       "#loading-screen-bar-inner"
@@ -142,18 +142,6 @@ class Game {
         this.platformsLoaded = true
       }
     })
-
-    // Background
-    this.background = {
-      gameWidth: this.canvasWidth,
-      gameHeight: this.canvasHeight,
-      image: this.bgImg,
-      x: 0,
-      y: 0,
-      width: 1920,
-      height: 1080,
-      speed: 2,
-    }
   }
 
   // Initialize game
@@ -163,6 +151,27 @@ class Game {
     this.canvas.height = window.innerHeight
     this.canvasHeight = window.innerHeight
     this.platformHeight = this.canvasHeight / 2
+
+    // Background
+    this.background = {
+      gameWidth: this.canvasWidth,
+      gameHeight: this.canvasHeight,
+      images: [
+        { src: this.bgImages[0], speed: 0 }, // Sky
+        { src: this.bgImages[1], speed: 0.05 }, // Clouds 1
+        { src: this.bgImages[2], speed: 0.1 }, // Clouds 2
+        { src: this.bgImages[3], speed: 0.15 }, // Clouds 3
+        { src: this.bgImages[4], speed: 0.2 }, // Clouds 4
+        { src: this.bgImages[5], speed: 0.25 }, // Rocks 1
+        { src: this.bgImages[6], speed: 0.3 }, // Rocks 2
+      ],
+      x: 0,
+      y: 0,
+      width: 1920,
+      height: 1080,
+      speed: 2,
+    }
+
     this.getAnimationDuration()
     this.loadSoundEffects()
     this.addEventListeners()
@@ -211,23 +220,29 @@ class Game {
     const scaledWidth = this.background.width * scale
     const scaledHeight = this.canvas.height // Use the height of the canvas
 
-    // Update the x position of the background for parallax effect
-    this.background.x =
-      -(this.sceneOffset * this.background.speed) % scaledWidth
-
     // Draw the images in a loop to cover the entire canvas width
-    for (let x = this.background.x; x < this.canvas.width; x += scaledWidth) {
-      this.ctx.drawImage(
-        this.background.image,
-        0,
-        0, // Source X and Y
-        this.background.width,
-        this.background.height, // Source Width and Height
-        x,
-        0, // Destination X and Y
-        scaledWidth,
-        scaledHeight // Destination Width and Height
-      )
+    for (let i = 0; i < this.background.images.length; i++) {
+      // Update the x position of the background for parallax effect
+      this.background.x =
+        -(
+          this.sceneOffset *
+          this.background.speed *
+          this.background.images[i].speed
+        ) % scaledWidth
+
+      for (let x = this.background.x; x < this.canvas.width; x += scaledWidth) {
+        this.ctx.drawImage(
+          this.background.images[i].src,
+          0,
+          0, // Source X and Y
+          this.background.width,
+          this.background.height, // Source Width and Height
+          x,
+          0, // Destination X and Y
+          scaledWidth,
+          scaledHeight // Destination Width and Height
+        )
+      }
     }
   }
 

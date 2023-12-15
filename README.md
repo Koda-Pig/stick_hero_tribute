@@ -20,9 +20,10 @@ If you get an error when you try open the project in the browser, do a force ref
 - [x] Add sound effects
 - [x] Add controls for volume (soundtrack and effects).
 - [x] Add controls for sountrack - skip track, previous track
-- [ ] Add punch animation to hero before stick falls
 - [x] Sticks swing further than 90 deg - fix.
-- [ ] Add parallax background
+- [x] Add parallax background
+- [ ] Improve platforms - add more variety + fix platform with width issue
+- [ ] Add punch animation to hero before stick falls
 
 ## SOUNDTRACK:
 
