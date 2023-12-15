@@ -75,6 +75,64 @@ canvas {
   }
 }
 
+.loading-screen {
+  position: fixed;
+  inset: 0;
+  // pointer-events: none;
+  background: var(--eigengrau);
+  z-index: 3;
+  display: grid;
+  place-content: center;
+
+  &.hide {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  &-inner {
+    gap: 2rem;
+    display: flex;
+    place-content: center;
+    place-items: center;
+    flex-direction: column;
+    max-width: 360px;
+    width: 100%;
+  }
+
+  &-icon {
+    display: block;
+    width: 192px;
+    height: 192px;
+    background-image: url("./images/monster-loading.png");
+    background-repeat: no-repeat;
+    background-position: 0;
+    background-size: cover;
+    animation: loading-animation 4s steps(31) infinite;
+  }
+
+  &-bar {
+    width: 300px;
+    height: 40px;
+    border: 2px solid var(--cosmic-latte);
+    border-radius: 9vw;
+    overflow: hidden;
+
+    &-inner {
+      height: 100%;
+      width: 10%;
+      background: #326e98;
+      display: block;
+    }
+  }
+
+  &-text {
+    font-size: 3rem;
+    left: 1px;
+    align-self: start;
+    margin-left: 4rem;
+  }
+}
+
 .container {
   display: grid;
   place-items: center;
@@ -107,12 +165,6 @@ canvas {
       font-size: 1.2rem;
       color: var(--eigengrau);
     }
-  }
-
-  #score {
-  }
-
-  #high-score {
   }
 }
 
@@ -163,9 +215,6 @@ canvas {
       animation-duration: var(--animation-duration);
     }
   }
-}
-
-#perfect {
 }
 
 #congrats {
@@ -366,6 +415,21 @@ canvas {
   100% {
     width: 300%;
     opacity: 0;
+  }
+}
+
+// 12.5   -
+// 25
+// 37.5
+// 50
+// 62.5
+// 75
+// 87.5
+// 100
+
+@keyframes loading-animation {
+  100% {
+    background-position: 100% 0;
   }
 }
 

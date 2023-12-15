@@ -14,6 +14,7 @@ const perfElem = document.getElementById("perfect")
 const congratsElem = document.getElementById("congrats")
 const scoreContainer = document.getElementById("score-container")
 const bgImg = document.getElementById("bg-img")
+const loadingScreen = document.getElementById("loading-screen")
 //// For controls
 const controlsBtn = document.getElementById("controls-btn")
 const controlsWrapper = document.getElementById("controls-wrapper")
@@ -29,7 +30,8 @@ const game = new Game(
   perfElem,
   congratsElem,
   scoreContainer,
-  bgImg
+  bgImg,
+  loadingScreen
 )
 game.init()
 

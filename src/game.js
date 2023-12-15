@@ -9,7 +9,8 @@ class Game {
     perfectElement,
     congratsElement,
     scoreContainer,
-    bgImg
+    bgImg,
+    loadingScreenWrapper
   ) {
     this.canvas = canvas
     this.scoreElement = scoreElement
@@ -21,7 +22,13 @@ class Game {
     this.congratsElement = congratsElement
     this.scoreContainer = scoreContainer
     this.bgImg = bgImg
-    this.i = 1
+    this.loadingScreenWrapper = loadingScreenWrapper
+    this.progressBar = this.loadingScreenWrapper.querySelector(
+      "#loading-screen-bar-inner"
+    )
+    this.loadingText = this.loadingScreenWrapper.querySelector(
+      ".loading-screen-text"
+    )
 
     // Getting the drawing context
     this.ctx = this.canvas.getContext("2d")
@@ -158,7 +165,7 @@ class Game {
     this.getAnimationDuration()
     this.loadSoundEffects()
     this.addEventListeners()
-    this.gameInit = true
+    this.loadingScreen()
   }
 
   // Sinus function that takes degrees instead of radians
@@ -725,13 +732,12 @@ class Game {
     // Perfect/new highscore sound
     this.soundEffects.perfect = new Audio("./sound-effects/win.wav")
 
+    // Preload all of the sound effects
     Object.values(this.soundEffects).forEach(sound => {
-      // Preload all of the sound effects
       sound.preload = "auto"
       sound.load()
-
-      // Set volume
-      sound.volume = this.volume.soundEffects
+      sound.volume = 0
+      sound.play()
     })
 
     // Load soundtrack
@@ -864,6 +870,36 @@ class Game {
     this.highscore = 0
     localStorage.setItem("stick-hero-tribute-highscore", this.highscore)
     this.highscoreElement.innerText = this.highscore
+  }
+
+  // Loading screen
+  // Set to 3 seconds to load assets
+  loadingScreen = () => {
+    // Increment the width of the progress bar by 1% every 20ms
+    let progress = 0
+    const interval = setInterval(() => {
+      progress++
+      this.progressBar.style.width = `${progress}%`
+
+      if (progress % 30 === 0) {
+        this.loadingText.innerText += "."
+      }
+
+      if (progress === 100) {
+        clearInterval(interval)
+
+        // Set sound effects volume
+
+        Object.values(this.soundEffects).forEach(sound => {
+          sound.pause()
+          sound.currentTime = 0
+          sound.volume = this.volume.soundEffects
+        })
+
+        this.loadingScreenWrapper.classList.add("hide")
+        this.gameInit = true
+      }
+    }, 20)
   }
 
   // Add event listeners
