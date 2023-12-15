@@ -1,3 +1,4 @@
+import { registerSW } from "virtual:pwa-register"
 import "./style.scss"
 import Game from "./game.js"
 import Controls from "./controls.js"
@@ -34,3 +35,16 @@ game.init()
 // Creating a new controls instance
 const controls = new Controls(controlsBtn, controlsWrapper, game)
 controls.init()
+
+// Service Worker
+const updateSW = registerSW({
+  onNeedRefresh() {
+    console.info("New content available, please refresh.")
+    if (confirm("New version available, would you like to update?")) {
+      window.location.reload()
+    }
+  },
+  onOfflineReady() {
+    console.info("Ready for offline usage.")
+  },
+})

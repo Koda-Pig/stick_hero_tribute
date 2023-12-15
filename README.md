@@ -22,7 +22,7 @@ If you get an error when you try open the project in the browser, do a force ref
 - [x] Add controls for sountrack - skip track, previous track
 - [ ] Add punch animation to hero before stick falls
 - [x] Sticks swing further than 90 deg - fix.
-- [ ] Improve backgrounds
+- [ ] Add parallax background
 
 ## SOUNDTRACK:
 
