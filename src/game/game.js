@@ -70,6 +70,7 @@ class Game {
     this.hill2BaseHeight = 70
     this.hill2Amplitude = 20
     this.hill2Stretch = 0.5
+    this.loadingScreenDuration = 4000 // milliseconds
 
     // Player
     /* Player sprite sheet is 768 x 768
@@ -737,7 +738,14 @@ class Game {
       sound.preload = "auto"
       sound.load()
       sound.volume = 0
-      sound.play()
+      sound.play().catch(e => console.error("Error playing sound:", e))
+
+      // After half the loadingScreenDuration, stop the sound
+      setTimeout(() => {
+        sound.pause()
+        sound.currentTime = 0 // Reset the sound to the beginning
+        sound.volume = this.volume.soundEffects
+      }, this.loadingScreenDuration / 2)
     })
 
     // Load soundtrack
@@ -887,19 +895,10 @@ class Game {
 
       if (progress === 100) {
         clearInterval(interval)
-
-        // Set sound effects volume
-
-        Object.values(this.soundEffects).forEach(sound => {
-          sound.pause()
-          sound.currentTime = 0
-          sound.volume = this.volume.soundEffects
-        })
-
         this.loadingScreenWrapper.classList.add("hide")
         this.gameInit = true
       }
-    }, 40)
+    }, this.loadingScreenDuration / 100)
   }
 
   // Add event listeners

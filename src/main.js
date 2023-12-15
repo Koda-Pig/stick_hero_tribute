@@ -1,6 +1,6 @@
 import { registerSW } from "virtual:pwa-register"
 import "./style.scss"
-import Game from "./game.js"
+import Game from "./game/game.js"
 import Controls from "./controls.js"
 
 // Getting nodes
