@@ -7,7 +7,8 @@ class Game {
     introductionElement,
     perfectElement,
     congratsElement,
-    scoreContainer
+    scoreContainer,
+    bgImg
   ) {
     this.canvas = canvas
     this.scoreElement = scoreElement
@@ -17,6 +18,8 @@ class Game {
     this.perfectElement = perfectElement
     this.congratsElement = congratsElement
     this.scoreContainer = scoreContainer
+    this.bgImg = bgImg
+    this.i = 1
 
     // Getting the drawing context
     this.ctx = this.canvas.getContext("2d")
@@ -128,13 +131,27 @@ class Game {
         this.platformsLoaded = true
       }
     })
+
+    // Background
+    this.background = {
+      gameWidth: this.canvasWidth,
+      gameHeight: this.canvasHeight,
+      image: this.bgImg,
+      x: 0,
+      y: 0,
+      width: 1920,
+      height: 1080,
+      speed: 2,
+    }
   }
 
   // Initialize game
   init = () => {
     this.canvas.width = window.innerWidth
+    this.canvasWidth = window.innerWidth
     this.canvas.height = window.innerHeight
-    this.platformHeight = this.canvas.height / 2
+    this.canvasHeight = window.innerHeight
+    this.platformHeight = this.canvasHeight / 2
     this.getAnimationDuration()
     this.loadSoundEffects()
     this.addEventListeners()
@@ -158,7 +175,7 @@ class Game {
   // Draw the whole scene
   draw = () => {
     this.ctx.save()
-    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
+    this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight)
 
     this.drawBackground()
 
@@ -176,29 +193,31 @@ class Game {
 
   // Draw the background
   drawBackground = () => {
-    // Draw sky
-    const gradient = this.ctx.createLinearGradient(0, 0, 0, window.innerHeight)
-    gradient.addColorStop(0, "#BBD691")
-    gradient.addColorStop(1, "#FEF1E1")
-    this.ctx.fillStyle = gradient
-    this.ctx.fillRect(0, 0, window.innerWidth, window.innerHeight)
+    // Calculate the scale to cover the height of the canvas
+    const scale = this.canvas.height / this.background.height
 
-    // Draw hills
-    this.drawHill(
-      this.hill1BaseHeight,
-      this.hill1Amplitude,
-      this.hill1Stretch,
-      "#95C629"
-    )
-    this.drawHill(
-      this.hill2BaseHeight,
-      this.hill2Amplitude,
-      this.hill2Stretch,
-      "#659F1C"
-    )
+    // Calculate the scaled width and height
+    const scaledWidth = this.background.width * scale
+    const scaledHeight = this.canvas.height // Use the height of the canvas
 
-    // Draw trees
-    this.trees.forEach(tree => this.drawTree(tree.x, tree.color))
+    // Update the x position of the background for parallax effect
+    this.background.x =
+      -(this.sceneOffset * this.background.speed) % scaledWidth
+
+    // Draw the images in a loop to cover the entire canvas width
+    for (let x = this.background.x; x < this.canvas.width; x += scaledWidth) {
+      this.ctx.drawImage(
+        this.background.image,
+        0,
+        0, // Source X and Y
+        this.background.width,
+        this.background.height, // Source Width and Height
+        x,
+        0, // Destination X and Y
+        scaledWidth,
+        scaledHeight // Destination Width and Height
+      )
+    }
   }
 
   // Draw a hill
@@ -259,16 +278,16 @@ class Game {
         pillar.width,
         this.platform.height,
         x,
-        this.canvas.height / 2,
+        this.canvasHeight / 2,
         w,
-        this.canvas.height / 2
+        this.canvasHeight / 2
       )
 
       // Draw perfect area
       this.ctx.fillStyle = "rgba(255, 0, 0, 0.5)"
       this.ctx.fillRect(
         x + w / 2 - this.perfectAreaSize / 2,
-        this.canvas.height - this.platformHeight,
+        this.canvasHeight - this.platformHeight,
         this.perfectAreaSize,
         this.perfectAreaSize
       )
@@ -307,7 +326,7 @@ class Game {
     this.ctx.translate(
       this.player.x - this.player.width / 2,
       this.player.y +
-        this.canvas.height -
+        this.canvasHeight -
         this.platformHeight -
         this.player.height * 1.17
     )
@@ -365,7 +384,7 @@ class Game {
       this.ctx.save()
 
       // Move the anchor point to the start of the stick and rotate
-      this.ctx.translate(stick.x, this.canvas.height - this.platformHeight)
+      this.ctx.translate(stick.x, this.canvasHeight - this.platformHeight)
       this.ctx.rotate((Math.PI / 180) * stick.rotation)
 
       // Draw stick
@@ -382,7 +401,7 @@ class Game {
     // Remove sticks that are no longer in the viewport,
     // after the player has walked past them and thePlatformTheStickHits() has been called
     this.sticks = this.sticks.filter(
-      stick => stick.x > this.sceneOffset - this.canvas.width
+      stick => stick.x > this.sceneOffset - this.canvasWidth
     )
   }
 
@@ -410,9 +429,9 @@ class Game {
 
     // Either the width of the canvas or half of it's height
     const maxLength =
-      this.canvas.width > this.canvas.height / 2
-        ? this.canvas.height / 2
-        : this.canvas.width
+      this.canvasWidth > this.canvasHeight / 2
+        ? this.canvasHeight / 2
+        : this.canvasWidth
 
     if (!this.lastTimestamp) {
       this.lastTimestamp = timestamp
@@ -545,7 +564,7 @@ class Game {
         }
 
         const maxPlayerY =
-          this.canvas.height - this.platformHeight + this.player.height + 10
+          this.canvasHeight - this.platformHeight + this.player.height + 10
 
         // Player falls off screen
         if (this.player.y > maxPlayerY) {
@@ -838,8 +857,10 @@ class Game {
   // handle window resize
   handleResize = () => {
     this.canvas.width = window.innerWidth
+    this.canvasWidth = window.innerWidth
     this.canvas.height = window.innerHeight
-    this.platformHeight = this.canvas.height / 2
+    this.canvasHeight = window.innerHeight
+    this.platformHeight = this.canvasHeight / 2
     // Do not draw if game is over or not started yet
     if (this.gameOver) return
     this.draw()
