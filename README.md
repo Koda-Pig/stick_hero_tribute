@@ -22,7 +22,7 @@ If you get an error when you try open the project in the browser, do a force ref
 - [x] Add controls for sountrack - skip track, previous track
 - [x] Sticks swing further than 90 deg - fix.
 - [x] Add parallax background
-- [ ] Improve platforms - add more variety + fix platform with width issue
+- [x] Improve platforms - add more variety + fix platform with width issue
 - [ ] Add punch animation to hero before stick falls
 - [ ] Save player settings in browser storage
 

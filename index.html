@@ -13,6 +13,14 @@
   <body>
     <div class="loading-screen" id="loading-screen">
       <div class="loading-screen-inner">
+        <button
+          id="start-btn"
+          class="button start-btn"
+          type="button"
+          aria-label="start"
+        >
+          START
+        </button>
         <img
           class="loading-screen-icon"
           aria-hidden="true"
@@ -31,7 +39,7 @@
             id="loading-screen-bar-inner"
           ></span>
         </div>
-        <p class="loading-screen-text">loading..</p>
+        <p class="loading-screen-text visually-hidden">loading..</p>
       </div>
     </div>
     <img
@@ -205,7 +213,7 @@
       <p class="alert" id="perfect">PERFECT!</p>
       <p class="alert" id="congrats">NEW HIGH SCORE!</p>
       <button id="restart" class="button" type="button" aria-label="restart">
-        START
+        RESTART
       </button>
     </main>
     <script type="module" src="/src/main.js"></script>

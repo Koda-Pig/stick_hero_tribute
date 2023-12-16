@@ -23,6 +23,7 @@ class Game {
     this.scoreContainer = scoreContainer
     this.bgImages = bgImgs
     this.loadingScreenWrapper = loadingScreenWrapper
+    this.startButton = this.loadingScreenWrapper.querySelector("#start-btn")
     this.progressBar = this.loadingScreenWrapper.querySelector(
       "#loading-screen-bar-inner"
     )
@@ -193,7 +194,6 @@ class Game {
     this.getAnimationDuration()
     this.loadSoundEffects()
     this.addEventListeners()
-    this.loadingScreen()
   }
 
   // Sinus function that takes degrees instead of radians
@@ -688,7 +688,6 @@ class Game {
   resetGame = () => {
     // Play track if game is first time initialized
     if (this.gameInit) {
-      this.restartButton.innerText = "RESTART"
       this.canvas.classList.add("active")
 
       // Only play soundtrack on restart if user has not paused it
@@ -717,8 +716,8 @@ class Game {
     this.scoreElement.innerText = this.score
     this.highscoreElement.innerText = this.highscore
 
-    // The first platform is always the same
-    this.platforms = [{ x: 50, w: 50, pillar: this.platform.pillars[0] }]
+    // The first platform is always the same - 4th platform is 50px wide
+    this.platforms = [{ x: 50, w: 50, pillar: this.platform.pillars[3] }]
 
     // Keep generating platforms until the screen is full
     while (this.totalPlatformWidth() < window.innerWidth) {
@@ -922,6 +921,8 @@ class Game {
   loadingScreen = () => {
     // Increment the width of the progress bar by 1% every 20ms
     let progress = 0
+    this.loadingText.classList.remove("visually-hidden")
+
     const interval = setInterval(() => {
       progress++
       this.progressBar.style.width = `${progress}%`
@@ -934,6 +935,10 @@ class Game {
         clearInterval(interval)
         this.loadingScreenWrapper.classList.add("hide")
         this.gameInit = true
+        this.resetGame()
+        this.restartButton.classList.add("hide")
+        window.requestAnimationFrame(this.animate)
+        this.controlsBtn.classList.add("show")
       }
     }, this.loadingTime / 100)
   }
@@ -949,12 +954,17 @@ class Game {
     })
   }
 
+  handleStart = () => {
+    this.loadingScreen()
+  }
+
   // Add event listeners
   addEventListeners = () => {
     this.canvas.addEventListener("mousedown", e => this.handleClick(e))
     this.canvas.addEventListener("touchstart", e => this.handleClick(e))
     this.canvas.addEventListener("mouseup", this.handleRelease)
     this.canvas.addEventListener("touchend", this.handleRelease)
+    this.startButton.addEventListener("click", this.handleStart)
     this.restartButton.addEventListener("click", e =>
       this.handleRestart(e, "click")
     )
