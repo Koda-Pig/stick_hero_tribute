@@ -4,18 +4,6 @@ import { VitePWA } from "vite-plugin-pwa"
 export default defineConfig({
   plugins: [
     VitePWA({
-      includeAssets: [
-        "favicon.ico",
-        "apple-touch-icon.png",
-        "mask-icon.svg",
-        "images/*.png",
-        "images/**/*.png",
-        "images/**/*.webp",
-        "images/**/*.svg",
-        "images/**/**/*.png",
-        "images/**/**/*.webp",
-        "images/**/**/**/*.webp",
-      ],
       injectRegister: "auto",
       manifest: {
         name: "Stick hero tribute game",
