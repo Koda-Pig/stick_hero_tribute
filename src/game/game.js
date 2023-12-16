@@ -74,7 +74,7 @@ class Game {
     this.hill2BaseHeight = 70
     this.hill2Amplitude = 20
     this.hill2Stretch = 0.5
-    this.loadingTime = 3000
+    this.loadingTime = 5000
 
     // Player
     /* Player sprite sheet is 768 x 768
