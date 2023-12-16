@@ -6,6 +6,7 @@ export default defineConfig({
     VitePWA({
       injectRegister: "auto",
       manifest: {
+        includeAssets: ["favicon.ico", "apple-touch-icon.png", "mask-icon.svg"],
         name: "Stick hero tribute game",
         short_name: "StickHero",
         description: "Stick hero tribute game by Josh Koter.",
