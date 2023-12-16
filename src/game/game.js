@@ -74,7 +74,7 @@ class Game {
     this.hill2BaseHeight = 70
     this.hill2Amplitude = 20
     this.hill2Stretch = 0.5
-    this.loadingTime = 4000
+    this.loadingTime = 3000
 
     // Player
     /* Player sprite sheet is 768 x 768
@@ -169,7 +169,7 @@ class Game {
     this.canvasWidth = window.innerWidth
     this.canvas.height = window.innerHeight
     this.canvasHeight = window.innerHeight
-    this.platformHeight = this.canvasHeight / 2
+    this.platformHeight = this.canvasHeight / 3
 
     // Background
     this.background = {
@@ -271,16 +271,17 @@ class Game {
   drawPlatforms = () => {
     this.platforms.forEach(({ x, w, pillar }) => {
       // draw sprite
+
       this.drawSprite(
-        pillar.sprite,
-        0,
-        0,
-        pillar.width,
-        this.platform.height,
-        x,
-        this.canvasHeight / 2,
-        w,
-        this.canvasHeight / 2
+        pillar.sprite, // * img: image object
+        0, // * sX: x coordinate of the top left corner of the source image
+        0, // * sY: y coordinate of the top left corner of the source image
+        pillar.width, // * sW: width of the source image
+        this.platform.height, // * sH: height of the source image
+        x, // * dX: x coordinate in the canvas at which to place the top left corner of the source image
+        this.canvasHeight - this.canvasHeight / 3, // * dY: y coordinate in the canvas at which to place the top left corner of the source image
+        w, // * dW: width of the source image to use (stretch or reduce the image)
+        this.canvasHeight / 3 // * dH: height of the source image to use (stretch or reduce the image)
       )
 
       // Draw perfect area
@@ -889,7 +890,7 @@ class Game {
     this.canvasWidth = window.innerWidth
     this.canvas.height = window.innerHeight
     this.canvasHeight = window.innerHeight
-    this.platformHeight = this.canvasHeight / 2
+    this.platformHeight = this.canvasHeight / 3
     // Do not draw if game is over or not started yet
     if (this.gameOver) return
     this.draw()
