@@ -67,7 +67,6 @@ class Controls {
       this.effectsSpan.innerText = "play sound effects"
       this.game.playerSettings.effectsState = "paused"
     }
-    this.game.playPauseEffects()
   }
 
   handlePrevNext = action => {

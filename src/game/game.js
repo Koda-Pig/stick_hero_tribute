@@ -700,6 +700,7 @@ class Game {
       // Only play soundtrack on restart if user has not paused it
       // Never pause the soundtrack on restart
       // const soundtrackPlaying = this.soundtrack.some(track => !track.paused)
+      console.log(this.soundtrackIsPlaying())
       if (
         !this.soundtrackIsPlaying() &&
         this.playerSettings.soundtrackState !== "paused"
@@ -841,11 +842,6 @@ class Game {
     this.currentTrack = trackindex
     currentTrack.onended = () =>
       this.playPauseSoundtrack(trackindex + 1, "toggle")
-  }
-
-  playPauseEffects() {
-    console.log(this.playerSettings.effectsState)
-    // If 'toggle' is selected, play or pause the track depending on its current state
   }
 
   prevNextSoundtrack(action) {

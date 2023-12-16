@@ -67,8 +67,8 @@ p {
   }
 
   &:disabled {
-    opacity: 0.9;
-    filter: grayscale(0.5);
+    opacity: 0.5;
+    filter: grayscale(1);
     pointer-events: none;
   }
 }
