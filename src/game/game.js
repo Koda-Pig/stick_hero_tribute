@@ -955,7 +955,7 @@ class Game {
       this.background.version++
     }
     this.bgImages.forEach((img, i) => {
-      img.src = `/images/backgrounds/parallax/game_background_${this.background.version}/layers/layer_${i}.webp`
+      img.src = `/images/backgrounds/game_background_${this.background.version}/layers/layer_${i}.webp`
     })
   }
 
