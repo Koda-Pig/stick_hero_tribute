@@ -46,7 +46,7 @@ const updateSW = registerSW({
   onNeedRefresh() {
     console.info("New content available, please refresh.")
     if (confirm("New version available, would you like to update?")) {
-      window.location.reload()
+      updateSW()
     }
   },
   onOfflineReady() {
