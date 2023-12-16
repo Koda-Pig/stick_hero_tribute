@@ -823,6 +823,7 @@ class Game {
 
     // If 'toggle' is selected, play or pause the track depending on its current state
     if (action === "toggle") {
+      if (!currentTrack) return
       if (currentTrack.paused) currentTrack.play()
       else currentTrack.pause()
     }
