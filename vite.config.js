@@ -5,8 +5,8 @@ export default defineConfig({
   plugins: [
     VitePWA({
       injectRegister: "auto",
+      includeAssets: ["favicon.ico", "apple-touch-icon.png", "mask-icon.svg"],
       manifest: {
-        includeAssets: ["favicon.ico", "apple-touch-icon.png", "mask-icon.svg"],
         name: "Stick hero tribute game",
         short_name: "StickHero",
         description: "Stick hero tribute game by Josh Koter.",
@@ -29,6 +29,9 @@ export default defineConfig({
             purpose: "any maskable",
           },
         ],
+      },
+      workbox: {
+        globPatterns: ["**/*.{js,css,html,ico,png,svg,webp,mp3}"],
       },
     }),
   ],
