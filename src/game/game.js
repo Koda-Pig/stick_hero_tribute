@@ -32,7 +32,6 @@ class Game {
     this.loadingText = this.loadingScreenWrapper.querySelector(
       ".loading-screen-text"
     )
-    this.currentScore
 
     // Getting the drawing context
     this.ctx = this.canvas.getContext("2d")
@@ -74,7 +73,7 @@ class Game {
     this.hill2BaseHeight = 70
     this.hill2Amplitude = 20
     this.hill2Stretch = 0.5
-    this.loadingTime = 5000
+    this.loadingTime = 4000
 
     // Player
     /* Player sprite sheet is 768 x 768
@@ -696,16 +695,6 @@ class Game {
     // Play track if game is first time initialized
     if (this.gameInit) {
       this.canvas.classList.add("active")
-
-      // Only play soundtrack on restart if user has not paused it
-      // Never pause the soundtrack on restart
-      // const soundtrackPlaying = this.soundtrack.some(track => !track.paused)
-      if (
-        !this.soundtrackIsPlaying() &&
-        this.playerSettings.soundtrackState !== "paused"
-      ) {
-        this.playPauseSoundtrack(0)
-      }
     }
 
     // Reset game state
@@ -944,6 +933,12 @@ class Game {
         this.restartButton.classList.add("hide")
         window.requestAnimationFrame(this.animate)
         this.controlsBtn.classList.add("show")
+        if (
+          this.playerSettings.soundtrackState &&
+          this.playerSettings.soundtrackState !== "paused"
+        ) {
+          this.playPauseSoundtrack(0)
+        }
       }
     }, this.loadingTime / 100)
   }
@@ -966,6 +961,7 @@ class Game {
     this.canvas.addEventListener("mouseup", this.handleRelease)
     this.canvas.addEventListener("touchend", this.handleRelease)
     this.startButton.addEventListener("click", () => {
+      this.startButton.setAttribute("disabled", true)
       this.init()
       this.loadingScreen()
     })

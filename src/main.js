@@ -3,7 +3,7 @@ import "./style.scss"
 import Game from "./game/game.js"
 import Controls from "./controls.js"
 
-document.addEventListener("DOMContentLoaded", () => {
+window.addEventListener("load", () => {
   // Getting nodes
   //// For game
   const canvas = document.getElementById("game")
