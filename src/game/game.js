@@ -70,7 +70,7 @@ class Game {
     this.hill2BaseHeight = 70
     this.hill2Amplitude = 20
     this.hill2Stretch = 0.5
-    this.loadingScreenDuration = 4000 // milliseconds
+    this.loadingTime = 1000 // milliseconds
 
     // Player
     /* Player sprite sheet is 768 x 768
@@ -98,44 +98,6 @@ class Game {
     }
 
     // Platforms
-    this.platformOLD = {
-      x: 0,
-      y: 0,
-      height: 535,
-      pillars: [
-        {
-          sprite: new Image(),
-          url: "./images/sprites/pillar-1.png",
-          width: 99,
-        },
-        {
-          sprite: new Image(),
-          url: "./images/sprites/pillar-2.png",
-          width: 123,
-        },
-        {
-          sprite: new Image(),
-          url: "./images/sprites/pillar-3.png",
-          width: 154,
-        },
-        {
-          sprite: new Image(),
-          url: "./images/sprites/pillar-4.png",
-          width: 162,
-        },
-        {
-          sprite: new Image(),
-          url: "./images/sprites/pillar-5.png",
-          width: 165,
-        },
-        {
-          sprite: new Image(),
-          url: "./images/sprites/pillar-6.png",
-          width: 188,
-        },
-      ],
-    }
-
     this.platform = {
       x: 0,
       y: 0,
@@ -223,6 +185,9 @@ class Game {
       width: 1920,
       height: 1080,
       speed: 2,
+      version: 1,
+      minVersion: 1,
+      maxVersion: 4,
     }
 
     this.getAnimationDuration()
@@ -812,12 +777,12 @@ class Game {
       sound.volume = 0
       sound.play().catch(e => console.error("Error playing sound:", e))
 
-      // After half the loadingScreenDuration, stop the sound
+      // After half the loadingTime, stop the sound
       setTimeout(() => {
         sound.pause()
         sound.currentTime = 0 // Reset the sound to the beginning
         sound.volume = this.volume.soundEffects
-      }, this.loadingScreenDuration / 2)
+      }, this.loadingTime / 2)
     })
 
     // Load soundtrack
@@ -970,7 +935,18 @@ class Game {
         this.loadingScreenWrapper.classList.add("hide")
         this.gameInit = true
       }
-    }, this.loadingScreenDuration / 100)
+    }, this.loadingTime / 100)
+  }
+
+  changeBackground = () => {
+    if (this.background.version === this.background.maxVersion) {
+      this.background.version = this.background.minVersion
+    } else {
+      this.background.version++
+    }
+    this.bgImages.forEach((img, i) => {
+      img.src = `/images/backgrounds/parallax/game_background_${this.background.version}/layers/layer_${i}.webp`
+    })
   }
 
   // Add event listeners

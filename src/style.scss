@@ -377,6 +377,12 @@ canvas {
         }
       }
 
+      &.background-btn {
+        i {
+          background-image: url("/images/icons/background.svg");
+        }
+      }
+
       &.next,
       &.prev {
         place-content: center;

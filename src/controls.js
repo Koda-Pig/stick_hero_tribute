@@ -13,6 +13,7 @@ class Controls {
     this.nextBtn = this.wrapper.querySelector("#next-btn")
     this.inputs = [this.inputEffects, this.inputMusic]
     this.highscoreBtn = this.wrapper.querySelector("#highscore-btn")
+    this.backgroundBtn = this.wrapper.querySelector("#background-btn")
   }
 
   init = () => {
@@ -91,6 +92,10 @@ class Controls {
     this.game.clearHighScore()
   }
 
+  changeBackground = () => {
+    this.game.changeBackground()
+  }
+
   addEventListeners = () => {
     this.menuBtn.addEventListener("click", this.handleHamburgerClick)
     this.inputs.forEach(input => {
@@ -102,7 +107,8 @@ class Controls {
     this.effectsBtn.addEventListener("click", this.handlePlayPauseEffects)
     this.prevBtn.addEventListener("click", () => this.handlePrevNext("prev"))
     this.nextBtn.addEventListener("click", () => this.handlePrevNext("next"))
-    this.highscoreBtn.addEventListener("click", () => this.handleHighScore())
+    this.highscoreBtn.addEventListener("click", this.handleHighScore)
+    this.backgroundBtn.addEventListener("click", this.changeBackground)
   }
 }
 
