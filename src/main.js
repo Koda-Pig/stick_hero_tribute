@@ -3,6 +3,19 @@ import "./style.scss"
 import Game from "./game/game.js"
 import Controls from "./controls.js"
 
+// Service Worker
+const updateSW = registerSW({
+  onNeedRefresh() {
+    console.info("New content available, please refresh.")
+    if (confirm("New version available, would you like to update?")) {
+      updateSW()
+    }
+  },
+  onOfflineReady() {
+    console.info("Ready for offline usage.")
+  },
+})
+
 window.addEventListener("load", () => {
   // Getting nodes
   //// For game
@@ -42,19 +55,6 @@ window.addEventListener("load", () => {
   // Creating a new controls instance
   const controls = new Controls(controlsBtn, controlsWrapper, game)
   controls.init()
-
-  // Service Worker
-  const updateSW = registerSW({
-    onNeedRefresh() {
-      console.info("New content available, please refresh.")
-      if (confirm("New version available, would you like to update?")) {
-        updateSW()
-      }
-    },
-    onOfflineReady() {
-      console.info("Ready for offline usage.")
-    },
-  })
 
   startBtn.removeAttribute("disabled")
 })
