@@ -9,6 +9,7 @@ class Game {
     perfectElement,
     congratsElement,
     scoreContainer,
+    currentScoreElem,
     bgImgs,
     loadingScreenWrapper
   ) {
@@ -21,6 +22,7 @@ class Game {
     this.perfectElement = perfectElement
     this.congratsElement = congratsElement
     this.scoreContainer = scoreContainer
+    this.currentScoreElem = currentScoreElem
     this.bgImages = bgImgs
     this.loadingScreenWrapper = loadingScreenWrapper
     this.startButton = this.loadingScreenWrapper.querySelector("#start-btn")
@@ -30,6 +32,7 @@ class Game {
     this.loadingText = this.loadingScreenWrapper.querySelector(
       ".loading-screen-text"
     )
+    this.currentScore
 
     // Getting the drawing context
     this.ctx = this.canvas.getContext("2d")
@@ -71,7 +74,8 @@ class Game {
     this.hill2BaseHeight = 70
     this.hill2Amplitude = 20
     this.hill2Stretch = 0.5
-    this.loadingTime = 4000 // milliseconds
+    this.loadingTime = 4000 // milliseconds FIXME: set to 4000
+    this.loadingTime = 400 // milliseconds FIXME: set to 4000
 
     // Player
     /* Player sprite sheet is 768 x 768
@@ -474,7 +478,7 @@ class Game {
           if (nextPlatform) {
             // Increase score
             this.score += perfectHit ? 2 : 1
-            this.scoreElement.innerText = this.score
+            this.currentScoreElem.innerText = this.score
 
             if (perfectHit) {
               this.perfectElement.classList.add("highlight")
@@ -575,6 +579,9 @@ class Game {
         if (this.player.y > maxPlayerY) {
           this.restartButton.classList.remove("hide")
           this.gameOver = true
+          this.scoreElement.innerText = this.score
+          this.currentScoreElem.classList.add("visually-hidden")
+          this.scoreContainer.classList.remove("hide")
           this.handleHighScore()
         }
         break
@@ -710,7 +717,10 @@ class Game {
     this.gameOver = false
 
     this.introductionElement.classList.remove("hide")
-    this.scoreContainer.classList.remove("hide")
+    this.currentScoreElem.classList.remove("visually-hidden")
+    this.currentScoreElem.classList.remove("visually-hidden")
+    this.scoreContainer.classList.add("hide")
+
     this.restartButton.classList.add("hide")
     this.congratsElement.classList.remove("highlight")
     this.scoreElement.innerText = this.score

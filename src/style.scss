@@ -152,13 +152,17 @@ canvas {
 
 .score-container {
   position: absolute;
-  top: 10px;
-  left: 30px;
+  top: 10%;
   display: grid;
-  gap: 16px;
-  align-items: center;
-  grid-template-columns: auto auto;
+  gap: 0.1rem;
+  place-items: center;
   opacity: 1;
+  background: white;
+  border-radius: 2vw;
+  width: calc(100% - 4rem);
+  max-width: 360px;
+  padding: 0.5rem 1rem 1rem;
+  box-shadow: 0px 0px 0px 1000vw rgba(0, 0, 0, 0.5);
 
   &.hide {
     opacity: 0;
@@ -167,15 +171,24 @@ canvas {
   .score {
     font-size: 2.5rem;
     font-weight: 900;
-    text-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
     line-height: 0.8;
+    color: var(--eigengrau);
 
     &-description {
-      font-weight: 600;
-      font-size: 1.2rem;
       color: var(--eigengrau);
+      font-weight: 600;
+      font-size: 1rem;
     }
   }
+}
+
+.current-score {
+  position: fixed;
+  top: 2rem;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 0.5rem 2rem;
+  font-size: 2.5rem;
+  border-radius: 1vw;
 }
 
 #restart {
@@ -184,10 +197,18 @@ canvas {
   font-size: 2rem;
   position: absolute;
   transition: opacity 0.15s;
+  border-color: var(--purp);
+  transition-property: border-color;
 
   @media screen and (min-width: 768px) {
     top: 35%;
     bottom: auto;
+  }
+
+  &:hover,
+  &:focus,
+  &:active {
+    border-color: var(--cosmic-latte);
   }
 
   &.hide {
@@ -197,7 +218,7 @@ canvas {
 }
 
 .alert {
-  top: 20%;
+  top: 30%;
   opacity: 0;
   display: grid;
   font-size: 3rem;
