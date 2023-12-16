@@ -954,17 +954,16 @@ class Game {
     })
   }
 
-  handleStart = () => {
-    this.loadingScreen()
-  }
-
   // Add event listeners
   addEventListeners = () => {
     this.canvas.addEventListener("mousedown", e => this.handleClick(e))
     this.canvas.addEventListener("touchstart", e => this.handleClick(e))
     this.canvas.addEventListener("mouseup", this.handleRelease)
     this.canvas.addEventListener("touchend", this.handleRelease)
-    this.startButton.addEventListener("click", this.handleStart)
+    this.startButton.addEventListener("click", () => {
+      this.init()
+      this.loadingScreen()
+    })
     this.restartButton.addEventListener("click", e =>
       this.handleRestart(e, "click")
     )
