@@ -98,7 +98,7 @@ class Game {
     }
 
     // Platforms
-    this.platform = {
+    this.platformOLD = {
       x: 0,
       y: 0,
       height: 535,
@@ -132,6 +132,59 @@ class Game {
           sprite: new Image(),
           url: "./images/sprites/pillar-6.png",
           width: 188,
+        },
+      ],
+    }
+
+    this.platform = {
+      x: 0,
+      y: 0,
+      height: 540,
+      pillars: [
+        {
+          sprite: new Image(),
+          url: "./images/platforms/platform-1.webp",
+          width: 20,
+        },
+        {
+          sprite: new Image(),
+          url: "./images/platforms/platform-2.webp",
+          width: 30,
+        },
+        {
+          sprite: new Image(),
+          url: "./images/platforms/platform-3.webp",
+          width: 40,
+        },
+        {
+          sprite: new Image(),
+          url: "./images/platforms/platform-4.webp",
+          width: 50,
+        },
+        {
+          sprite: new Image(),
+          url: "./images/platforms/platform-5.webp",
+          width: 60,
+        },
+        {
+          sprite: new Image(),
+          url: "./images/platforms/platform-6.webp",
+          width: 70,
+        },
+        {
+          sprite: new Image(),
+          url: "./images/platforms/platform-7.webp",
+          width: 80,
+        },
+        {
+          sprite: new Image(),
+          url: "./images/platforms/platform-8.webp",
+          width: 90,
+        },
+        {
+          sprite: new Image(),
+          url: "./images/platforms/platform-9.webp",
+          width: 100,
         },
       ],
     }
@@ -604,10 +657,10 @@ class Game {
 
   // Generates a new platform
   generatePlatform = () => {
-    this.minimumGap = 40
-    this.maximumGap = 200
-    this.minimumWidth = 20
-    this.maximumWidth = 100
+    this.minGap = 40
+    this.maxGap = 200
+    this.minWidth = 20
+    this.maxWidth = 100
 
     // X coordinate of the right edge of the furthest platform
     const lastPlatform = this.platforms[this.platforms.length - 1]
@@ -615,27 +668,35 @@ class Game {
 
     const x =
       furthestX +
-      this.minimumGap +
-      Math.floor(Math.random() * (this.maximumGap - this.minimumGap))
+      this.minGap +
+      Math.floor(Math.random() * (this.maxGap - this.minGap))
+    // Random width between 20 and 100
     const w =
-      this.minimumWidth +
-      Math.floor(Math.random() * (this.maximumWidth - this.minimumWidth))
+      Math.floor(
+        Math.random() * (this.maxWidth / 10 - 1) + this.minWidth / 10
+      ) * 10
 
     // Select a pillar based on the w value. The pillars get progressively wider,
     // So match the pillar based on the width of the platform:
     let pillar
-    if (w < 33) {
+    if (w === 20) {
       pillar = this.platform.pillars[0]
-    } else if (w < 46) {
+    } else if (w === 30) {
       pillar = this.platform.pillars[1]
-    } else if (w < 59) {
+    } else if (w === 40) {
       pillar = this.platform.pillars[2]
-    } else if (w < 72) {
+    } else if (w === 50) {
       pillar = this.platform.pillars[3]
-    } else if (w < 85) {
+    } else if (w === 60) {
       pillar = this.platform.pillars[4]
-    } else {
+    } else if (w === 70) {
       pillar = this.platform.pillars[5]
+    } else if (w === 80) {
+      pillar = this.platform.pillars[6]
+    } else if (w === 90) {
+      pillar = this.platform.pillars[7]
+    } else {
+      pillar = this.platform.pillars[8]
     }
 
     this.platforms.push({ x, w, pillar })
@@ -643,17 +704,14 @@ class Game {
 
   // Generates a new tree
   generateTree = () => {
-    const minimumGap = 30
-    const maximumGap = 150
+    const minGap = 30
+    const maxGap = 150
 
     // X coordinate of the right edge of the furthest tree
     const lastTree = this.trees[this.trees.length - 1]
     let furthestX = lastTree ? lastTree.x : 0
 
-    const x =
-      furthestX +
-      minimumGap +
-      Math.floor(Math.random() * (maximumGap - minimumGap))
+    const x = furthestX + minGap + Math.floor(Math.random() * (maxGap - minGap))
 
     const treeColors = ["#6D8821", "#8FAC34", "#98B333"]
     const color = treeColors[Math.floor(Math.random() * 3)]
