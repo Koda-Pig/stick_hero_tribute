@@ -700,7 +700,6 @@ class Game {
       // Only play soundtrack on restart if user has not paused it
       // Never pause the soundtrack on restart
       // const soundtrackPlaying = this.soundtrack.some(track => !track.paused)
-      console.log(this.soundtrackIsPlaying())
       if (
         !this.soundtrackIsPlaying() &&
         this.playerSettings.soundtrackState !== "paused"
