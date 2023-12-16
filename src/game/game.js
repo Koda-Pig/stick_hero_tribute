@@ -422,7 +422,7 @@ class Game {
 
   // The main animation loop
   animate = timestamp => {
-    if (!this.spritesLoaded) return
+    if (!this.spritesLoaded || !this.platformsLoaded) return
     // Either the width of the canvas or half of it's height
     const maxLength =
       this.canvasWidth > this.canvasHeight / 2

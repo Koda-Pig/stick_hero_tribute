@@ -70,11 +70,6 @@ a {
 
 canvas {
   pointer-events: none;
-  background: url("./images/background-small.webp") bottom / cover no-repeat;
-
-  @media screen and (min-width: 585px) {
-    background-image: url("./images/background.webp");
-  }
 
   &.active {
     pointer-events: all;
