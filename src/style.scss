@@ -317,10 +317,14 @@ canvas {
     &-inner {
       gap: 0.5rem;
       display: grid;
-      padding-top: 4rem;
+      padding-top: 2rem;
       justify-items: center;
       max-width: 250px;
       width: 100%;
+
+      hr {
+        width: 100%;
+      }
     }
 
     .prev-next-wrapper {
