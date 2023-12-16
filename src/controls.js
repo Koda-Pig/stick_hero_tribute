@@ -94,6 +94,9 @@ class Controls {
 
   changeBackground = () => {
     this.game.changeBackground()
+    this.backgroundBtn.querySelector(
+      "span"
+    ).innerText = `change background - ${this.game.background.version}`
   }
 
   addEventListeners = () => {
