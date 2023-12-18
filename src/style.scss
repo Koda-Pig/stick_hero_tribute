@@ -215,11 +215,6 @@ canvas {
   border-color: var(--purp);
   transition-property: border-color;
 
-  @media screen and (min-width: 768px) {
-    top: 35%;
-    bottom: auto;
-  }
-
   &:hover,
   &:focus,
   &:active {
