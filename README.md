@@ -2,6 +2,8 @@
 
 Inspired by the Stick Hero game by KetchApp. JS implementation inspired by this [tutorial](https://www.freecodecamp.org/news/javascript-game-tutorial-stick-hero-with-html-canvas/#the-stick-hero-game).
 
+Live deploy [here](https://stick-hero.joshkoter.com/)
+
 ## Project setup
 
 - `npm install`
