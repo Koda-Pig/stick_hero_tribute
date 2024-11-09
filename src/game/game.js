@@ -32,6 +32,7 @@ class Game {
     this.loadingText = this.loadingScreenWrapper.querySelector(
       ".loading-screen-text"
     )
+    this.activeControllerButtons = []
 
     // Getting the drawing context
     this.ctx = this.canvas.getContext("2d")
@@ -73,7 +74,26 @@ class Game {
     this.hill2BaseHeight = 70
     this.hill2Amplitude = 20
     this.hill2Stretch = 0.5
-    this.loadingTime = 4000
+    this.loadingTime = 2000
+    this.loadingTime = 0
+    this.gamepadKeyMap = {
+      0: "A",
+      1: "B",
+      2: "X",
+      3: "Y",
+      4: "LB",
+      5: "RB",
+      6: "LT",
+      7: "RT",
+      8: "BACK",
+      9: "START",
+      10: "LS",
+      11: "RS",
+      12: "UP",
+      13: "DOWN",
+      14: "LEFT",
+      15: "RIGHT",
+    }
 
     // Player
     /* Player sprite sheet is 768 x 768
@@ -438,6 +458,8 @@ class Game {
       return
     }
 
+    this.pollGamepadInput()
+
     let timePassed = timestamp - this.lastTimestamp
     const lastStick = this.sticks[this.sticks.length - 1]
 
@@ -470,33 +492,33 @@ class Game {
 
         lastStick.rotation += timePassed / this.turningSpeed
 
-        if (lastStick.rotation > 90) {
-          lastStick.rotation = 90
+        if (lastStick.rotation <= 90) break
 
-          const [nextPlatform, perfectHit] = this.thePlatformTheStickHits()
-          if (nextPlatform) {
-            // Increase score
-            this.score += perfectHit ? 2 : 1
-            this.currentScoreElem.innerText = this.score
+        lastStick.rotation = 90
 
-            if (perfectHit) {
-              this.perfectElement.classList.add("highlight")
-              if (this.playerSettings.effectsState === "playing") {
-                this.soundEffects.perfect.play()
-              }
+        const [nextPlatform, perfectHit] = this.thePlatformTheStickHits()
+        if (nextPlatform) {
+          // Increase score
+          this.score += perfectHit ? 2 : 1
+          this.currentScoreElem.innerText = this.score
 
-              setTimeout(() => {
-                this.perfectElement.classList.remove("highlight")
-              }, this.perfectAnimationDuration)
+          if (perfectHit) {
+            this.perfectElement.classList.add("highlight")
+            if (this.playerSettings.effectsState === "playing") {
+              this.soundEffects.perfect.play()
             }
 
-            this.generatePlatform()
-            this.generateTree()
-            this.generateTree()
+            setTimeout(() => {
+              this.perfectElement.classList.remove("highlight")
+            }, this.perfectAnimationDuration)
           }
 
-          this.phase = "walking"
+          this.generatePlatform()
+          this.generateTree()
+          this.generateTree()
         }
+
+        this.phase = "walking"
         break
       }
       case "walking": {
@@ -707,7 +729,6 @@ class Game {
 
     this.introductionElement.classList.remove("hide")
     this.currentScoreElem.classList.remove("visually-hidden")
-    this.currentScoreElem.classList.remove("visually-hidden")
     this.scoreContainer.classList.add("hide")
 
     this.restartButton.classList.add("hide")
@@ -773,14 +794,10 @@ class Game {
       sound.preload = "auto"
       sound.load()
       sound.volume = 0
-      sound.play().catch(e => console.error("Error playing sound:", e))
 
-      // After half the loadingTime, stop the sound
-      setTimeout(() => {
-        sound.pause()
-        sound.currentTime = 0 // Reset the sound to the beginning
+      sound.onload = () => {
         sound.volume = this.volume.soundEffects
-      }, this.loadingTime / 2)
+      }
     })
 
     // Load soundtrack
@@ -854,19 +871,28 @@ class Game {
     return this.soundtrack.some(track => !track.paused)
   }
 
+  activateStick = () => {
+    if (this.phase !== "waiting") return
+
+    this.lastTimestamp = undefined
+    this.introductionElement.classList.add("hide")
+    this.phase = "stretching"
+  }
+
+  deactivateStick = () => {
+    if (this.phase !== "stretching") return
+    this.phase = "turning"
+  }
+
   // handle mouse down/ touch start
   handleClick = e => {
     e.preventDefault()
-    if (this.phase == "waiting") {
-      this.lastTimestamp = undefined
-      this.introductionElement.classList.add("hide")
-      this.phase = "stretching"
-    }
+    this.activateStick()
   }
 
   // handle mouse up/ touch end
   handleRelease = () => {
-    if (this.phase == "stretching") this.phase = "turning"
+    this.deactivateStick()
   }
 
   // handle window resize
@@ -953,6 +979,32 @@ class Game {
     this.bgImages.forEach((img, i) => {
       img.src = `/images/backgrounds/game_background_${this.background.version}/layers/layer_${i}.webp`
     })
+  }
+
+  pollGamepadInput() {
+    const gamepads = navigator.getGamepads()
+    if (!gamepads?.[0]) return
+
+    const gamepad = gamepads[0]
+
+    gamepad.buttons.forEach((button, index) => {
+      const action = this.gamepadKeyMap[index]
+
+      if (button.pressed) {
+        if (this.activeControllerButtons.includes(action)) return
+        this.activeControllerButtons.unshift(action)
+      } else {
+        this.activeControllerButtons = this.activeControllerButtons.filter(
+          button => button !== action
+        )
+      }
+    })
+
+    if (this.activeControllerButtons.length > 0) {
+      this.activateStick()
+    } else {
+      this.deactivateStick()
+    }
   }
 
   // Add event listeners

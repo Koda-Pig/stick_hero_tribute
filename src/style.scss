@@ -345,6 +345,7 @@ canvas {
     position: fixed;
     inset: 0;
     z-index: 2;
+    overflow: clip scroll;
     justify-items: center;
     display: grid;
     align-items: start;
@@ -355,7 +356,7 @@ canvas {
     &-inner {
       gap: 0.5rem;
       display: grid;
-      padding-top: 2rem;
+      padding-block: 2rem;
       justify-items: center;
       max-width: 250px;
       width: 100%;
